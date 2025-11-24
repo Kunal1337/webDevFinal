@@ -1,70 +1,90 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import gshock from "../assets/gshock1.webp";
 import omega from "../assets/omega1.webp";
-import submariner from "../assets/Submariner1.webp";
+import submariner from "../assets/Submariner1.jpg";
+import tagheuer from "../assets/Tagheuer1.avif";
+
+// NEW WATCH IMAGES
+import classicSilver from "../assets/watch-1silver.webp";
+import luxuryGold from "../assets/watch-4.webp";
+import sportyBlack from "../assets/watch-3.webp";
+
+const API_BASE = "https://webdevfinal-1.onrender.com";
+
+const imageMap = {
+  "Classic Silver": classicSilver,
+  "Luxury Gold": luxuryGold,
+  "Sporty Black": sportyBlack,
+
+  // Original watches
+  "Casio G-Shock": gshock,
+  "Omega Speedmaster": omega,
+  "Rolex Submariner": submariner,
+  "Tag Heuer Carrera": tagheuer,
+};
 
 const Home = () => {
+  const [featured, setFeatured] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/watches`)
+      .then(res => res.json())
+      .then(data => {
+        console.log("Fetched watches for home:", data);
+        setFeatured(data.slice(0, 3));   // First 3 watches
+      })
+      .catch(err => console.error("Error fetching watches:", err));
+  }, []);
+
   return (
     <div className="home-page">
 
-      {/* ---------- HERO ---------- */}
-      <section 
-        className="hero" 
-        style={{ backgroundImage: `url(${submariner})` }}
-      >
+      {/* Hero Section */}
+      <section className="hero" style={{ backgroundImage: `url(${submariner})` }}>
         <div className="hero-content">
           <h1>Timeless Watches</h1>
-          <p>Premium craftsmanship. Unmatched style. Explore our finest collection today.</p>
+          <p>Discover our premium collection of watches crafted with precision.</p>
           <Link to="/shop" className="btn">Shop Now</Link>
         </div>
       </section>
 
-      {/* ---------- FEATURED PRODUCTS ---------- */}
-      <section className="featured-products page-container">
+      {/* Featured Products */}
+      <section className="featured-products">
         <h2>Featured Watches</h2>
-
         <div className="products-grid">
 
-          {/* G-Shock */}
-          <div className="product-card">
-            <div className="product-image-wrapper">
-              <img src={gshock} alt="Casio G-Shock" className="product-image" />
-            </div>
-            <h3>Casio G-Shock</h3>
-            <p>$120.00</p>
-            <Link to="/shop" className="btn-small">Buy Now</Link>
-          </div>
-
-          {/* Omega */}
-          <div className="product-card">
-            <div className="product-image-wrapper">
-              <img src={omega} alt="Omega Speedmaster" className="product-image" />
-            </div>
-            <h3>Omega Speedmaster</h3>
-            <p>$5200.00</p>
-            <Link to="/shop" className="btn-small">Buy Now</Link>
-          </div>
-
-          {/* Rolex Submariner */}
-          <div className="product-card">
-            <div className="product-image-wrapper">
-              <img src={submariner} alt="Rolex Submariner" className="product-image" />
-            </div>
-            <h3>Rolex Submariner</h3>
-            <p>$9150.00</p>
-            <Link to="/shop" className="btn-small">Buy Now</Link>
-          </div>
+          {featured.length === 0 ? (
+            <p>No featured watches available.</p>
+          ) : (
+            featured.map(watch => {
+              const name = `${watch.brand} ${watch.model}`;
+              return (
+                <div className="product-card" key={watch.id}>
+                  <img 
+                    src={imageMap[name] || gshock}
+                    alt={name}
+                    className="product-image"
+                  />
+                  <h3>{name}</h3>
+                  <p>${watch.price}</p>
+                  <Link to={`/product/${watch.id}`} className="btn-small">
+                    View Details
+                  </Link>
+                </div>
+              );
+            })
+          )}
 
         </div>
       </section>
 
-      {/* ---------- CALL TO ACTION ---------- */}
-      <section className="cta page-container">
-        <h2>Stay Stylish, Stay On Time</h2>
-        <p>Join our newsletter for exclusive offers and new arrivals.</p>
-        <Link to="/shop" className="btn">Explore Collection</Link>
+      {/* CTA */}
+      <section className="cta">
+        <h2>Stay Stylish, Stay on Time</h2>
+        <p>Sign up for our newsletter and get exclusive offers on new arrivals.</p>
+        <Link to="/shop" className="btn">Shop the Collection</Link>
       </section>
 
     </div>

@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 
 import gshock from "../assets/gshock1.webp";
 import omega from "../assets/omega1.webp";
-import submariner from "../assets/Submariner1.webp";
+import submariner from "../assets/Submariner1.jpg";
 import tagheuer from "../assets/Tagheuer1.avif";
 
 const imageMap = {
