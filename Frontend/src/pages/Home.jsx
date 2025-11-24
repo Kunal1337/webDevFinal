@@ -1,24 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
+// Original images
 import gshock from "../assets/gshock1.webp";
 import omega from "../assets/omega1.webp";
 import submariner from "../assets/Submariner1.jpg";
 import tagheuer from "../assets/Tagheuer1.avif";
 
-// NEW WATCH IMAGES
+// New watches
 import classicSilver from "../assets/watch-1silver.webp";
 import luxuryGold from "../assets/watch-4.webp";
 import sportyBlack from "../assets/watch-3.webp";
 
 const API_BASE = "https://webdevfinal-1.onrender.com";
 
+// Map brand+model → correct image
 const imageMap = {
+  // New seed watches
   "Classic Silver": classicSilver,
   "Luxury Gold": luxuryGold,
   "Sporty Black": sportyBlack,
 
-  // Original watches
+  // Original DB watches
   "Casio G-Shock": gshock,
   "Omega Speedmaster": omega,
   "Rolex Submariner": submariner,
@@ -30,19 +33,22 @@ const Home = () => {
 
   useEffect(() => {
     fetch(`${API_BASE}/api/watches`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         console.log("Fetched watches for home:", data);
-        setFeatured(data.slice(0, 3));   // First 3 watches
+        setFeatured(data.slice(0, 3)); // top 3 watches
       })
-      .catch(err => console.error("Error fetching watches:", err));
+      .catch((err) => console.error("Error fetching watches:", err));
   }, []);
 
   return (
     <div className="home-page">
 
       {/* Hero Section */}
-      <section className="hero" style={{ backgroundImage: `url(${submariner})` }}>
+      <section
+        className="hero"
+        style={{ backgroundImage: `url(${submariner})` }}
+      >
         <div className="hero-content">
           <h1>Timeless Watches</h1>
           <p>Discover our premium collection of watches crafted with precision.</p>
@@ -58,11 +64,12 @@ const Home = () => {
           {featured.length === 0 ? (
             <p>No featured watches available.</p>
           ) : (
-            featured.map(watch => {
+            featured.map((watch) => {
               const name = `${watch.brand} ${watch.model}`;
+
               return (
                 <div className="product-card" key={watch.id}>
-                  <img 
+                  <img
                     src={imageMap[name] || gshock}
                     alt={name}
                     className="product-image"
@@ -80,7 +87,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA Section */}
       <section className="cta">
         <h2>Stay Stylish, Stay on Time</h2>
         <p>Sign up for our newsletter and get exclusive offers on new arrivals.</p>
