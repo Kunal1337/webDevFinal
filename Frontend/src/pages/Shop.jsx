@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import CartPanel from "../components/CartPanel";
+import { useCart } from "../context/CartContext";
 
 // Original images
 import gshock from "../assets/gshock1.webp";
@@ -30,6 +32,7 @@ const watchImages = {
 
 const Shop = () => {
   const [watches, setWatches] = useState([]);
+  const { cart, addItem, removeItem, clearCart } = useCart();
 
   useEffect(() => {
     fetch(`${API_BASE}/api/watches`)
@@ -42,10 +45,11 @@ const Shop = () => {
   }, []);
 
   return (
-    <div className="shop-page">
-      <h1>Shop Our Collection</h1>
+    <div className="shop-page page-container" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24 }}>
+      <div>
+        <h1>Shop Our Collection</h1>
 
-      <div className="products-grid">
+        <div className="products-grid">
         {watches.length === 0 ? (
           <p>No watches available yet.</p>
         ) : (
@@ -62,11 +66,15 @@ const Shop = () => {
                   image: watchImages[name] || gshock, // fallback
                   description: watch.description,
                 }}
+                onAddToCart={addItem}
               />
             );
           })
         )}
+        </div>
       </div>
+
+      <CartPanel cart={cart} onRemove={removeItem} onClear={clearCart} />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onAddToCart }) => {
   return (
     <div className="product-card">
       <div className="product-image-wrapper">
@@ -9,9 +9,17 @@ const ProductCard = ({ product }) => {
       </div>
       <h3>{product.name}</h3>
       <p>${Number(product.price).toFixed(2)}</p>
-      <Link to={`/product/${product.id}`} className="btn-small">
-        View Details
-      </Link>
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <Link to={`/product/${product.id}`} className="btn-small">
+          View Details
+        </Link>
+
+        {onAddToCart ? (
+          <button className="btn-small" onClick={() => onAddToCart(product)}>
+            Add to Cart
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 };

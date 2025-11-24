@@ -20,7 +20,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="contact-page">
+    <div className="contact-page page-container">
       <h1>Contact Us</h1>
 
       <div className="contact-container">
@@ -59,9 +59,9 @@ const Contact = () => {
         {/* Company Info */}
         <div className="contact-info">
           <h2>Our Office</h2>
-          <p>123 Watch Street</p>
-          <p>New York, NY 10001</p>
-          <p>Email: support@watchstore.com</p>
+          <p>110 Inner Campus Drive</p>
+          <p>Austin, TX 78705</p>
+          <p>Email: watchlovers@watchusgo.com</p>
           <p>Phone: +1 123 456 7890</p>
         </div>
       </div>

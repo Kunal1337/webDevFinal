@@ -4,35 +4,47 @@ const About = () => {
   return (
     <div className="about-page">
       <section className="about-hero">
-        <h1>About WatchStore</h1>
-        <p>We craft and deliver premium watches worldwide.</p>
+        <h1>About Watch US Go</h1>
+        <p>We craft and deliver premium U.S watches worldwide.</p>
       </section>
+      <br></br>
 
-      <section className="about-mission">
-        <h2>Our Mission</h2>
-        <p>
-          At WatchStore, our mission is to provide timeless watches that combine style, quality, and precision. 
-          Every timepiece is carefully selected to ensure our customers get nothing but the best.
-        </p>
-      </section>
+      <div className="about-sections">
+        <div className="section-card">
+          <div className="card-icon">⏱️</div>
+          <h3>Our Mission</h3>
+          <p>
+            At Watch US Go, our mission is to provide timeless watches that combine style, quality, and precision. 
+            Every timepiece is carefully selected to ensure our customers get nothing but the best.
+          </p>
+          <div className="card-meta">Timeless design • Global delivery</div>
+        </div>
 
-      <section className="about-values">
-        <h2>Our Values</h2>
-        <ul>
-          <li>🕰 Quality craftsmanship</li>
-          <li>🌍 Global delivery</li>
-          <li>💎 Premium customer service</li>
-          <li>⌚ Style meets functionality</li>
-        </ul>
-      </section>
+        <div className="section-card">
+          <div className="card-icon">🏆</div>
+          <h3>Our Values</h3>
+          <p>
+            We prioritize quality craftsmanship, exceptional customer service, and responsible practices
+            so our customers always receive value and trust in every purchase.
+          </p>
+          <ul>
+            <li>Quality craftsmanship</li>
+            <li>Global delivery</li>
+            <li>Premium customer service</li>
+            <li>Style meets functionality</li>
+          </ul>
+        </div>
 
-      <section className="about-team">
-        <h2>Our Team</h2>
-        <p>
-          Our passionate team of watch enthusiasts, designers, and customer service experts work together 
-          to bring you an unforgettable shopping experience.
-        </p>
-      </section>
+        <div className="section-card">
+          <div className="card-icon">👥</div>
+          <h3>Our Team</h3>
+          <p>
+            Our passionate team of watch enthusiasts, designers, and customer service experts work together 
+            to bring you an unforgettable shopping experience for watch lovers like you.
+          </p>
+          <div className="card-meta">Small team • Big passion</div>
+        </div>
+      </div>
     </div>
   );
 };
