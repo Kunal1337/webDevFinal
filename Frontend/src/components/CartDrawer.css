@@ -1,0 +1,141 @@
+/* Dark background behind drawer */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 80;
+}
+
+.cart-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Drawer */
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: -400px; /* hidden off-screen */
+  width: 340px;
+  height: 100%;
+  background: #0f1a33;
+  box-shadow: -4px 0px 20px rgba(0, 0, 0, 0.4);
+  padding: 22px;
+  z-index: 99;
+
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease;
+}
+
+.cart-drawer.open {
+  right: 0; /* slides in */
+}
+
+/* Header */
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.cart-header h2 {
+  color: #fff;
+  font-size: 22px;
+}
+
+.drawer-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Items */
+.drawer-list {
+  list-style: none;
+  padding: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.05);
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.drawer-item img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.item-meta {
+  flex: 1;
+}
+
+.item-name {
+  color: white;
+  font-weight: 600;
+}
+
+.item-qty {
+  color: #ccc;
+  font-size: 14px;
+}
+
+.item-price {
+  color: #fff;
+  font-weight: 600;
+}
+
+.remove {
+  background: transparent;
+  border: 1px solid #f44;
+  color: #f44;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.remove:hover {
+  background: #f44;
+  color: #fff;
+}
+
+/* Footer */
+.drawer-footer {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.total {
+  color: white;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.btn {
+  width: 100%;
+  background: #c57b39;
+  border: none;
+  padding: 12px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #a9652c;
+}

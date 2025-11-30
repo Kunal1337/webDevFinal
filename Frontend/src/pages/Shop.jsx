@@ -45,36 +45,38 @@ const Shop = () => {
   }, []);
 
   return (
-    <div className="shop-page page-container" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24 }}>
-      <div>
-        <h1>Shop Our Collection</h1>
+    <div className="shop-page">
+      <div className="page-container" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24 }}>
+        <div>
+          <h1>Shop Our Collection</h1>
 
-        <div className="products-grid">
-        {watches.length === 0 ? (
-          <p>No watches available yet.</p>
-        ) : (
-          watches.map((watch) => {
-            const name = `${watch.brand} ${watch.model}`;
+          <div className="products-grid">
+          {watches.length === 0 ? (
+            <p>No watches available yet.</p>
+          ) : (
+            watches.map((watch) => {
+              const name = `${watch.brand} ${watch.model}`;
 
-            return (
-              <ProductCard
-                key={watch.id}
-                product={{
-                  id: watch.id,
-                  name: name,
-                  price: watch.price,
-                  image: watchImages[name] || gshock, // fallback
-                  description: watch.description,
-                }}
-                onAddToCart={addItem}
-              />
-            );
-          })
-        )}
+              return (
+                <ProductCard
+                  key={watch.id}
+                  product={{
+                    id: watch.id,
+                    name: name,
+                    price: watch.price,
+                    image: watchImages[name] || gshock, // fallback
+                    description: watch.description,
+                  }}
+                  onAddToCart={addItem}
+                />
+              );
+            })
+          )}
+          </div>
         </div>
-      </div>
 
-      <CartPanel cart={cart} onRemove={removeItem} onClear={clearCart} />
+        <CartPanel cart={cart} onRemove={removeItem} onClear={clearCart} />
+      </div>
     </div>
   );
 };

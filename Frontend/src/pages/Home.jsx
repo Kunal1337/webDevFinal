@@ -43,8 +43,7 @@ const Home = () => {
 
   return (
     <div className="home-page">
-
-      {/* Hero Section */}
+      {/* Hero Section - OUTSIDE page-container for full width */}
       <section
         className="hero"
         style={{ backgroundImage: `url(${submariner})` }}
@@ -56,44 +55,46 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="featured-products">
-        <h2>Featured Watches</h2>
-        <div className="products-grid">
+      {/* Rest of content INSIDE page-container */}
+      <div className="page-container">
+        {/* Featured Products */}
+        <section className="featured-products">
+          <h2>Featured Watches</h2>
+          <div className="products-grid">
 
-          {featured.length === 0 ? (
-            <p>No featured watches available.</p>
-          ) : (
-            featured.map((watch) => {
-              const name = `${watch.brand} ${watch.model}`;
+            {featured.length === 0 ? (
+              <p>No featured watches available.</p>
+            ) : (
+              featured.map((watch) => {
+                const name = `${watch.brand} ${watch.model}`;
 
-              return (
-                <div className="product-card" key={watch.id}>
-                  <img
-                    src={imageMap[name] || gshock}
-                    alt={name}
-                    className="product-image"
-                  />
-                  <h3>{name}</h3>
-                  <p>${watch.price}</p>
-                  <Link to={`/product/${watch.id}`} className="btn-small">
-                    View Details
-                  </Link>
-                </div>
-              );
-            })
-          )}
+                return (
+                  <div className="product-card" key={watch.id}>
+                    <img
+                      src={imageMap[name] || gshock}
+                      alt={name}
+                      className="product-image"
+                    />
+                    <h3>{name}</h3>
+                    <p>${watch.price}</p>
+                    <Link to={`/product/${watch.id}`} className="btn-small">
+                      View Details
+                    </Link>
+                  </div>
+                );
+              })
+            )}
 
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* CTA Section */}
-      <section className="cta">
-        <h2>Stay Stylish, Stay on Time</h2>
-        <p>Sign up for our newsletter and get exclusive offers on new arrivals.</p>
-        <Link to="/shop" className="btn">Shop the Collection</Link>
-      </section>
-
+        {/* CTA Section */}
+        <section className="cta">
+          <h2>Stay Stylish, Stay on Time</h2>
+          <p>Sign up for our newsletter and get exclusive offers on new arrivals.</p>
+          <Link to="/shop" className="btn">Shop the Collection</Link>
+        </section>
+      </div>
     </div>
   );
 };
