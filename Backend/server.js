@@ -5,9 +5,6 @@ import pkg from "pg";
 import "dotenv/config";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 
 const { Pool } = pkg;
@@ -121,12 +118,16 @@ app.delete("/api/watches/:id", async (req, res) => {
   }
 });
 
-// ------- SMART AI CHATBOX (READING DATABASE) -------
+// --------- SMART AI CHATBOX ROUTE ----------
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 app.post("/api/ai/chat", async (req, res) => {
   try {
     const { message } = req.body;
 
-    // Fetch watches from your database
+    // Get watches from DB
     const dbData = await pool.query("SELECT * FROM watches ORDER BY id DESC");
     const watches = dbData.rows;
 
@@ -145,17 +146,17 @@ app.post("/api/ai/chat", async (req, res) => {
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: "You are a helpful watch expert." },
-        { role: "user", content: aiPrompt }
-      ]
+        { role: "user", content: aiPrompt },
+      ],
     });
 
     res.json({ reply: completion.choices[0].message.content || "" });
-
   } catch (err) {
     console.error("AI error:", err);
     res.status(500).json({ error: "AI request failed" });
   }
 });
+
 
 
 // ----- START SERVER -----
