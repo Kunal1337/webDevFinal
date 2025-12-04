@@ -26,11 +26,30 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  const increaseQty = (id) => {
+    setCart(prev => prev.map(it => it.id === id ? { ...it, quantity: it.quantity + 1 } : it));
+  };
+
+  const decreaseQty = (id) => {
+    setCart(prev => {
+      return prev.reduce((acc, it) => {
+        if (it.id === id) {
+          const nextQty = it.quantity - 1;
+          if (nextQty > 0) acc.push({ ...it, quantity: nextQty });
+          // if nextQty === 0, item is removed
+        } else {
+          acc.push(it);
+        }
+        return acc;
+      }, []);
+    });
+  };
+
   const removeItem = (id) => setCart(prev => prev.filter(i => i.id !== id));
   const clearCart = () => setCart([]);
 
   return (
-    <CartContext.Provider value={{ cart, addItem, removeItem, clearCart }}>
+    <CartContext.Provider value={{ cart, addItem, removeItem, clearCart, increaseQty, decreaseQty }}>
       {children}
     </CartContext.Provider>
   );

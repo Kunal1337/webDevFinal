@@ -6,9 +6,9 @@ const Cart = () => {
   const { cart, removeItem, clearCart } = useCart();
 
   return (
-    <div className="cart-page page-container">
-      <h1>Your Cart</h1>
-      <div style={{ maxWidth: 980, margin: '0 auto' }}>
+    <div className="w-full bg-brandNavy px-12 py-6">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold text-white mb-8">Your Cart</h1>
         <CartPanel cart={cart} onRemove={removeItem} onClear={clearCart} />
       </div>
     </div>

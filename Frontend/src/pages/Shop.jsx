@@ -45,14 +45,14 @@ const Shop = () => {
   }, []);
 
   return (
-    <div className="shop-page">
-      <div className="page-container" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24 }}>
-        <div>
-          <h1>Shop Our Collection</h1>
+    <div className="w-full bg-brandNavy px-12 py-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-4 gap-6">
+        <div className="col-span-3">
+          <h1 className="text-3xl font-bold text-white mb-6">Shop Our Collection</h1>
 
-          <div className="products-grid">
+          <div className="grid grid-cols-3 gap-6">
           {watches.length === 0 ? (
-            <p>No watches available yet.</p>
+            <p className="text-white">No watches available yet.</p>
           ) : (
             watches.map((watch) => {
               const name = `${watch.brand} ${watch.model}`;
@@ -75,7 +75,9 @@ const Shop = () => {
           </div>
         </div>
 
-        <CartPanel cart={cart} onRemove={removeItem} onClear={clearCart} />
+        <div>
+          <CartPanel cart={cart} onRemove={removeItem} onClear={clearCart} />
+        </div>
       </div>
     </div>
   );
