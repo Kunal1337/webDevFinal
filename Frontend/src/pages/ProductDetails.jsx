@@ -13,7 +13,7 @@ const imageMap = {
   "Tag Heuer Carrera": tagheuer,
 };
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = "https://webdevfinal-1.onrender.com";
 
 const ProductDetails = () => {
   const { id } = useParams();
