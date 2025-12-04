@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import pkg from "pg";
 import "dotenv/config";
+import OpenAI from "openai";
+
+
 
 const { Pool } = pkg;
 
@@ -114,6 +117,47 @@ app.delete("/api/watches/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete watch" });
   }
 });
+
+// --------- SMART AI CHATBOX ROUTE ----------
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+app.post("/api/ai/chat", async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    // Get watches from DB
+    const dbData = await pool.query("SELECT * FROM watches ORDER BY id DESC");
+    const watches = dbData.rows;
+
+    const aiPrompt = `
+    User question: ${message}
+
+    Here is the list of watches in the store:
+    ${JSON.stringify(watches)}
+
+    Use the watches above to answer the user's question.
+    Always recommend watches that exist in the database.
+    Keep the response short, friendly, and helpful.
+    `;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: "You are a helpful watch expert." },
+        { role: "user", content: aiPrompt },
+      ],
+    });
+
+    res.json({ reply: completion.choices[0].message.content || "" });
+  } catch (err) {
+    console.error("AI error:", err);
+    res.status(500).json({ error: "AI request failed" });
+  }
+});
+
+
 
 // ----- START SERVER -----
 const PORT = process.env.PORT || 3001;
