@@ -157,6 +157,123 @@ app.post("/api/ai/chat", async (req, res) => {
   }
 });
 
+// -- get cart 
+app.get("/api/cart", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT cart_items.id, product_id, quantity, watches.*
+      FROM cart_items
+      JOIN watches ON watches.id = cart_items.product_id
+    `);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Cart fetch error:", err);
+    res.status(500).json({ error: "Failed to fetch cart" });
+  }
+});
+
+//-- add cart 
+app.post("/api/cart", async (req, res) => {
+  try {
+    const { product_id } = req.body;
+
+    // Check if the product already exists in cart
+    const existing = await pool.query(
+      "SELECT * FROM cart_items WHERE product_id = $1",
+      [product_id]
+    );
+
+    if (existing.rows.length > 0) {
+      const updated = await pool.query(
+        `UPDATE cart_items
+         SET quantity = quantity + 1
+         WHERE product_id = $1
+         RETURNING *`,
+        [product_id]
+      );
+      return res.json(updated.rows[0]);
+    }
+
+    const result = await pool.query(
+      `INSERT INTO cart_items (product_id, quantity)
+       VALUES ($1, 1)
+       RETURNING *`,
+      [product_id]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Add to cart error:", err);
+    res.status(500).json({ error: "Failed to add item to cart" });
+  }
+});
+
+--// increase cart item quantity
+app.put("/api/cart/increase/:id", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE cart_items
+       SET quantity = quantity + 1
+       WHERE id = $1
+       RETURNING *`,
+      [req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Increase qty error:", err);
+    res.status(500).json({ error: "Failed to increase quantity" });
+  }
+});
+
+--// decrease cart item quantity
+app.put("/api/cart/decrease/:id", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE cart_items
+       SET quantity = quantity - 1
+       WHERE id = $1
+       RETURNING *`,
+      [req.params.id]
+    );
+
+    if (result.rows[0].quantity <= 0) {
+      await pool.query("DELETE FROM cart_items WHERE id = $1", [
+        req.params.id,
+      ]);
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Decrease qty error:", err);
+    res.status(500).json({ error: "Failed to decrease quantity" });
+  }
+});
+--// remove cart item
+app.delete("/api/cart/:id", async (req, res) => {
+  try {
+    await pool.query("DELETE FROM cart_items WHERE id = $1", [
+      req.params.id,
+    ]);
+    res.json({ message: "Item removed" });
+  } catch (err) {
+    console.error("Remove cart item error:", err);
+    res.status(500).json({ error: "Failed to remove item" });
+  }
+});
+ 
+
+--// clear cart 
+app.delete("/api/cart", async (req, res) => {
+  try {
+    await pool.query("DELETE FROM cart_items");
+    res.json({ message: "Cart cleared" });
+  } catch (err) {
+    console.error("Clear cart error:", err);
+    res.status(500).json({ error: "Failed to clear cart" });
+  }
+});
+
 
 
 // ----- START SERVER -----

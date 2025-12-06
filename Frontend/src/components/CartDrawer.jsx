@@ -3,7 +3,7 @@ import { useCart } from "../context/CartContext";
 
 import "./CartDrawer.css";
 
-export default function CartDrawer({ isOpen, onClose }) {
+const CartDrawer = ({ isOpen, onClose }) => {
   const { cart, removeItem, clearCart, increaseQty, decreaseQty } = useCart();
 
   const total = cart.reduce(
@@ -16,7 +16,9 @@ export default function CartDrawer({ isOpen, onClose }) {
       {/* Dark overlay */}
       <div
         className={`fixed inset-0 bg-black bg-opacity-45 z-80 ${
-          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          isOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         } transition-opacity duration-300`}
         onClick={onClose}
       ></div>
@@ -55,6 +57,7 @@ export default function CartDrawer({ isOpen, onClose }) {
 
                   <div className="flex-1">
                     <p className="text-white font-bold">{item.name}</p>
+
                     <div className="text-gray-300 text-sm flex items-center gap-2">
                       <button
                         className="bg-transparent border border-white border-opacity-10 text-white w-7 h-7 rounded inline-flex items-center justify-center cursor-pointer hover:bg-white hover:bg-opacity-5"
@@ -62,7 +65,9 @@ export default function CartDrawer({ isOpen, onClose }) {
                       >
                         -
                       </button>
+
                       <span className="mx-2">{item.quantity}</span>
+
                       <button
                         className="bg-transparent border border-white border-opacity-10 text-white w-7 h-7 rounded inline-flex items-center justify-center cursor-pointer hover:bg-white hover:bg-opacity-5"
                         onClick={() => increaseQty(item.id)}
@@ -103,4 +108,6 @@ export default function CartDrawer({ isOpen, onClose }) {
       </div>
     </>
   );
-}
+};
+
+export default CartDrawer;

@@ -12,7 +12,7 @@ import classicSilver from "../assets/watch-1silver.webp";
 import luxuryGold from "../assets/watch-4.webp";
 import sportyBlack from "../assets/watch-3.webp";
 
-const API_BASE = "https://webdevfinal-1.onrender.com";
+const API_BASE = "https://webdevfinal-ai.onrender.com/";
 
 // Map brand+model → correct image
 const imageMap = {
