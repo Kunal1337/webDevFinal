@@ -8,6 +8,7 @@ import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
 import ProductDetails from "./pages/ProductDetails";
 import Cart from './pages/Cart.jsx'; 
+import FloatingChat from "./components/FloatingChat";
 
 import './App.css';
 import { CartProvider } from './context/CartContext';
@@ -26,6 +27,8 @@ function App() {
 
       </Routes>
       <Footer />
+      {/* ⭐ ADD FLOATING CHAT HERE ⭐ */}
+        <FloatingChat />
     </Router>
     </CartProvider>
 );

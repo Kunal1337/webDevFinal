@@ -2,8 +2,9 @@
 import express from "express";
 import cors from "cors";
 import pkg from "pg";
-import "dotenv/config";
+import dotenv from "dotenv";
 import OpenAI from "openai";
+dotenv.config();
 
 
 
@@ -24,6 +25,44 @@ pool.connect()
   .catch(err => console.error(" Database connection error:", err));
 
 // ----- ROUTES -----
+app.use(cors({
+  origin: [
+    "http://localhost:5173", 
+    "https://watch-ecommerce-ttrm.onrender.com",   // your frontend
+    "https://webdevfinal-ai.onrender.com"          // your backend calling itself
+  ],
+  methods: ["GET", "POST"]
+}));
+
+
+// --- AI CHAT ROUTE ---
+app.post("/api/ai/chat", async (req, res) => {
+  try {
+    const userInput = req.body.message;
+
+    if (!userInput) {
+      return res.status(400).json({ error: "No message provided" });
+    }
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: "You are a watch expert assistant." },
+        { role: "user", content: userInput }
+      ],
+    });
+
+    return res.json({
+      reply: response.choices[0].message.content,
+    });
+
+  } catch (err) {
+    console.log("🔥 FULL AI ERROR BELOW 🔥");
+    console.log(err);
+    return res.status(500).json({ error: "AI request failed" });
+  }
+});
+
 
 // Test route
 app.get("/", (req, res) => {
