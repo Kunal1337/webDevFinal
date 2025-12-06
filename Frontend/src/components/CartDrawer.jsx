@@ -1,8 +1,6 @@
 import React from "react";
 import { useCart } from "../context/CartContext";
 
-import "./CartDrawer.css";
-
 export default function CartDrawer({ isOpen, onClose }) {
   const { cart, removeItem, clearCart, increaseQty, decreaseQty } = useCart();
 
@@ -13,58 +11,44 @@ export default function CartDrawer({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Dark overlay */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-45 z-80 ${
-          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        } transition-opacity duration-300`}
+        className={`cart-drawer-overlay ${isOpen ? "cart-drawer-overlay-open" : ""}`}
         onClick={onClose}
       ></div>
 
-      {/* Sliding drawer */}
-      <div
-        className={`fixed top-0 right-0 w-80 h-full bg-darkBg shadow-lg p-6 z-99 flex flex-col transition-all duration-300 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-white text-2xl font-bold">Your Cart</h2>
-          <button
-            className="bg-transparent border-none text-white text-2xl cursor-pointer"
-            onClick={onClose}
-          >
+      <div className={`cart-drawer ${isOpen ? "cart-drawer-open" : ""}`}>
+        <div className="cart-drawer-header">
+          <h2 className="cart-drawer-title">Your Cart</h2>
+          <button className="cart-drawer-close-btn" onClick={onClose}>
             ✕
           </button>
         </div>
 
         {cart.length === 0 ? (
-          <p className="text-gray-300">Your cart is empty</p>
+          <p className="cart-drawer-empty">Your cart is empty</p>
         ) : (
           <>
-            <ul className="list-none p-0 flex-1 overflow-y-auto">
+            <ul className="cart-drawer-list">
               {cart.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-center gap-3 bg-white bg-opacity-5 p-3 rounded-lg mb-3"
-                >
+                <li key={item.id} className="cart-drawer-item">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-14 h-14 object-cover rounded"
+                    className="cart-drawer-item-image"
                   />
 
-                  <div className="flex-1">
-                    <p className="text-white font-bold">{item.name}</p>
-                    <div className="text-gray-300 text-sm flex items-center gap-2">
+                  <div className="cart-drawer-item-info">
+                    <p className="cart-drawer-item-name">{item.name}</p>
+                    <div className="cart-drawer-item-controls">
                       <button
-                        className="bg-transparent border border-white border-opacity-10 text-white w-7 h-7 rounded inline-flex items-center justify-center cursor-pointer hover:bg-white hover:bg-opacity-5"
+                        className="cart-drawer-qty-btn"
                         onClick={() => decreaseQty(item.id)}
                       >
                         -
                       </button>
-                      <span className="mx-2">{item.quantity}</span>
+                      <span className="cart-drawer-qty-display">{item.quantity}</span>
                       <button
-                        className="bg-transparent border border-white border-opacity-10 text-white w-7 h-7 rounded inline-flex items-center justify-center cursor-pointer hover:bg-white hover:bg-opacity-5"
+                        className="cart-drawer-qty-btn"
                         onClick={() => increaseQty(item.id)}
                       >
                         +
@@ -72,12 +56,12 @@ export default function CartDrawer({ isOpen, onClose }) {
                     </div>
                   </div>
 
-                  <p className="text-white font-bold">
+                  <p className="cart-drawer-item-price">
                     ${(item.price * item.quantity).toFixed(2)}
                   </p>
 
                   <button
-                    className="bg-transparent border border-red-400 text-red-400 px-2 py-1 rounded text-sm cursor-pointer hover:bg-red-400 hover:text-white"
+                    className="cart-drawer-remove-btn"
                     onClick={() => removeItem(item.id)}
                   >
                     Remove
@@ -86,15 +70,12 @@ export default function CartDrawer({ isOpen, onClose }) {
               ))}
             </ul>
 
-            <div className="pt-3 border-t border-white border-opacity-10">
-              <p className="text-white font-bold mb-3">
+            <div className="cart-drawer-footer">
+              <p className="cart-drawer-total">
                 Total: ${total.toFixed(2)}
               </p>
 
-              <button
-                className="w-full bg-primary border-none px-7 py-3 text-white rounded-md cursor-pointer font-medium hover:bg-primaryDark transition"
-                onClick={clearCart}
-              >
+              <button className="cart-drawer-clear-btn" onClick={clearCart}>
                 Clear Cart
               </button>
             </div>

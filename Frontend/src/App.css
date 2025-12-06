@@ -1,4 +1,417 @@
-/* Tailwind CSS imports - all styling via utility classes in components */
+/* ========================================
+   TAILWIND BASE
+   ======================================== */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ========================================
+   GLOBAL BUTTON STYLES
+   ======================================== */
+.btn {
+  @apply px-6 py-3 bg-transparent text-brandGold border-2 border-brandGold rounded-lg transition font-semibold cursor-pointer hover:bg-brandGold hover:text-black;
+}
+
+.btn-small {
+  @apply px-4 py-2 bg-transparent text-brandGold border-2 border-brandGold rounded-lg transition font-semibold cursor-pointer text-sm hover:bg-brandGold hover:text-black;
+}
+
+.btn.remove,
+.remove {
+  @apply bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white;
+}
+
+/* ========================================
+   NAVBAR STYLES
+   ======================================== */
+.navbar {
+  @apply w-full px-20 py-5 flex justify-center items-center bg-white border-b border-gray-200 sticky top-0 z-50;
+}
+
+.navbar-container {
+  @apply flex items-center justify-between gap-10 w-full max-w-6xl;
+}
+
+.navbar-logo {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.navbar-menu {
+  @apply hidden md:flex list-none gap-8 items-center;
+}
+
+.navbar-link {
+  @apply text-base font-medium text-gray-700 hover:text-primary transition;
+}
+
+.navbar-actions {
+  @apply flex items-center gap-5;
+}
+
+.navbar-action-link {
+  @apply text-sm text-gray-700 hover:text-primary transition;
+}
+
+/* ========================================
+   FOOTER STYLES
+   ======================================== */
+.footer {
+  @apply bg-black text-white px-20 py-10 mt-16;
+}
+
+.footer-brand {
+  @apply mb-6;
+}
+
+.footer-brand-title {
+  @apply font-bold mb-2;
+}
+
+.footer-brand-description {
+  @apply text-gray-400;
+}
+
+.footer-links-section {
+  @apply mb-6;
+}
+
+.footer-links-title {
+  @apply font-bold mb-2;
+}
+
+.footer-links {
+  @apply list-none flex gap-5 p-0;
+}
+
+.footer-link {
+  @apply text-gray-300 hover:text-primary transition;
+}
+
+.footer-copyright {
+  @apply mt-5 text-sm text-center text-gray-500 pt-5 border-t border-gray-700;
+}
+
+/* ========================================
+   PRODUCT CARD STYLES
+   ======================================== */
+.product-card {
+  @apply bg-gradient-to-b from-blue-50 to-blue-100 border border-blue-100 p-5 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 transition;
+}
+
+.product-image-container {
+  @apply mb-3 relative;
+}
+
+.product-image {
+  @apply w-full h-48 object-cover rounded-md;
+}
+
+.product-success-overlay {
+  @apply absolute inset-0 bg-green-500 bg-opacity-90 rounded-md flex items-center justify-center;
+}
+
+.success-text {
+  @apply text-white font-bold text-lg;
+}
+
+.product-error-overlay {
+  @apply absolute inset-0 bg-red-500 bg-opacity-90 rounded-md flex items-center justify-center;
+}
+
+.error-text {
+  @apply text-white font-bold text-sm;
+}
+
+.product-info {
+  @apply text-center;
+}
+
+.product-name {
+  @apply text-lg font-semibold mb-2;
+}
+
+.product-description {
+  @apply text-gray-600 text-sm mb-2 line-clamp-2;
+}
+
+.product-price {
+  @apply text-gray-600 text-sm mb-3;
+}
+
+.product-actions {
+  @apply flex gap-2 justify-center;
+}
+
+.product-details-btn,
+.btn-small {
+  @apply px-4 py-2 bg-transparent text-brandGold border-2 border-brandGold rounded-lg transition text-center font-semibold hover:bg-brandGold hover:text-black;
+}
+
+.product-add-btn {
+  @apply px-4 py-2 bg-transparent text-brandGold border-2 border-brandGold rounded-lg transition font-semibold hover:bg-brandGold hover:text-black disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* ========================================
+   CART PAGE STYLES
+   ======================================== */
+.cart-page {
+  @apply w-full bg-brandNavy px-12 py-6 min-h-screen;
+}
+
+.cart-container {
+  @apply max-w-4xl mx-auto;
+}
+
+.cart-title {
+  @apply text-4xl font-bold text-white mb-8;
+}
+
+.cart-loading {
+  @apply text-white;
+}
+
+.cart-empty {
+  @apply bg-white rounded-lg p-8 text-center;
+}
+
+.cart-empty-text {
+  @apply text-gray-600 text-lg mb-4;
+}
+
+.cart-card {
+  @apply bg-white rounded-lg shadow-lg overflow-hidden;
+}
+
+.cart-items {
+  @apply divide-y divide-gray-200;
+}
+
+.cart-item {
+  @apply p-6 flex items-center gap-4;
+}
+
+.cart-item-image {
+  @apply w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0;
+}
+
+.cart-item-img {
+  @apply w-full h-full object-cover;
+}
+
+.cart-item-no-image {
+  @apply w-full h-full flex items-center justify-center text-gray-400;
+}
+
+.cart-item-info {
+  @apply flex-grow;
+}
+
+.cart-item-name {
+  @apply text-lg font-semibold text-gray-800;
+}
+
+.cart-item-price {
+  @apply text-gray-600;
+}
+
+.cart-item-quantity {
+  @apply flex items-center gap-3;
+}
+
+.qty-btn {
+  @apply w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold text-gray-700 transition;
+}
+
+.qty-display {
+  @apply w-8 text-center font-semibold;
+}
+
+.cart-item-total {
+  @apply text-right min-w-[100px];
+}
+
+.item-total-price {
+  @apply text-lg font-bold text-gray-800;
+}
+
+.remove-btn {
+  @apply text-red-500 hover:text-red-700 font-semibold ml-4 transition;
+}
+
+.cart-summary {
+  @apply bg-gray-50 p-6 border-t border-gray-200;
+}
+
+.cart-total {
+  @apply flex justify-between items-center mb-4;
+}
+
+.total-label {
+  @apply text-xl font-semibold text-gray-800;
+}
+
+.total-amount {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.cart-actions {
+  @apply flex gap-4;
+}
+
+.clear-cart-btn {
+  @apply flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition;
+}
+
+.checkout-btn {
+  @apply flex-1 px-6 py-3 bg-brandGold hover:bg-[#DAA520] text-white font-semibold rounded-lg transition;
+}
+
+.continue-shopping {
+  @apply block text-center mt-4 text-blue-600 hover:text-blue-800 font-medium;
+}
+
+/* ========================================
+   CART PANEL STYLES
+   ======================================== */
+.cart-panel {
+  @apply bg-darkBg bg-opacity-30 p-4 rounded-lg text-white min-h-52;
+}
+
+.cart-panel-title {
+  @apply mb-3 font-bold;
+}
+
+.cart-panel-empty {
+  @apply text-gray-300;
+}
+
+.cart-panel-list {
+  @apply list-none p-0 m-0 mb-3 flex flex-col gap-2;
+}
+
+.cart-panel-item {
+  @apply flex gap-2 items-center;
+}
+
+.cart-panel-item-image {
+  @apply w-14 h-14 object-cover rounded;
+}
+
+.cart-panel-item-info {
+  @apply flex-1;
+}
+
+.cart-panel-item-name {
+  @apply font-semibold text-white;
+}
+
+.cart-panel-item-controls {
+  @apply text-sm text-gray-300 flex items-center gap-2;
+}
+
+.cart-panel-item-price {
+  @apply font-bold text-white mr-2;
+}
+
+.cart-panel-remove-btn {
+  @apply btn-small remove;
+}
+
+.cart-panel-total {
+  @apply font-bold mt-2 text-white;
+}
+
+.cart-panel-actions {
+  @apply mt-3;
+}
+
+.cart-panel-clear-btn {
+  @apply btn w-full;
+}
+
+/* ========================================
+   CART DRAWER STYLES
+   ======================================== */
+.cart-drawer-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-45 z-[80] opacity-0 pointer-events-none transition-opacity duration-300;
+}
+
+.cart-drawer-overlay-open {
+  @apply opacity-100 pointer-events-auto;
+}
+
+.cart-drawer {
+  @apply fixed top-0 right-0 w-80 h-full bg-darkBg shadow-lg p-6 z-[99] flex flex-col transition-all duration-300 translate-x-full;
+}
+
+.cart-drawer-open {
+  @apply translate-x-0;
+}
+
+.cart-drawer-header {
+  @apply flex justify-between items-center mb-5;
+}
+
+.cart-drawer-title {
+  @apply text-white text-2xl font-bold;
+}
+
+.cart-drawer-close-btn {
+  @apply bg-transparent border-none text-white text-2xl cursor-pointer hover:opacity-80 transition;
+}
+
+.cart-drawer-empty {
+  @apply text-gray-300;
+}
+
+.cart-drawer-list {
+  @apply list-none p-0 flex-1 overflow-y-auto;
+}
+
+.cart-drawer-item {
+  @apply flex items-center gap-3 bg-white bg-opacity-5 p-3 rounded-lg mb-3;
+}
+
+.cart-drawer-item-image {
+  @apply w-14 h-14 object-cover rounded;
+}
+
+.cart-drawer-item-info {
+  @apply flex-1;
+}
+
+.cart-drawer-item-name {
+  @apply text-white font-bold;
+}
+
+.cart-drawer-item-controls {
+  @apply text-gray-300 text-sm flex items-center gap-2;
+}
+
+.cart-drawer-qty-btn {
+  @apply bg-transparent border border-white border-opacity-10 text-white w-7 h-7 rounded inline-flex items-center justify-center cursor-pointer hover:bg-white hover:bg-opacity-5 transition;
+}
+
+.cart-drawer-qty-display {
+  @apply mx-2;
+}
+
+.cart-drawer-item-price {
+  @apply text-white font-bold;
+}
+
+.cart-drawer-remove-btn {
+  @apply bg-transparent border border-red-400 text-red-400 px-2 py-1 rounded text-sm cursor-pointer hover:bg-red-400 hover:text-white transition;
+}
+
+.cart-drawer-footer {
+  @apply pt-3 border-t border-white border-opacity-10;
+}
+
+.cart-drawer-total {
+  @apply text-white font-bold mb-3;
+}
+
+.cart-drawer-clear-btn {
+  @apply w-full bg-primary border-none px-7 py-3 text-white rounded-md cursor-pointer font-medium hover:bg-primaryDark transition;
+}

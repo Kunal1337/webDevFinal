@@ -10,6 +10,8 @@ export default {
         primary: '#c57b39',
         primaryDark: '#a9652c',
         brandNavy: '#002147',
+        brandGold: "#B8860B",
+        
         accent: '#646cff',
         darkBg: '#0f1a33',
         darkCard: '#1a2847',
