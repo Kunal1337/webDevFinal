@@ -2,11 +2,8 @@
 import express from "express";
 import cors from "cors";
 import pkg from "pg";
-import dotenv from "dotenv";
+import "dotenv/config";
 import OpenAI from "openai";
-dotenv.config();
-
-
 
 const { Pool } = pkg;
 
@@ -21,48 +18,10 @@ const pool = new Pool({
 });
 
 pool.connect()
-  .then(() => console.log(" Connected to Render PostgreSQL"))
-  .catch(err => console.error(" Database connection error:", err));
+  .then(() => console.log("✅ Connected to Render PostgreSQL"))
+  .catch(err => console.error("❌ Database connection error:", err));
 
 // ----- ROUTES -----
-app.use(cors({
-  origin: [
-    "http://localhost:5173", 
-    "https://watch-ecommerce-ttrm.onrender.com",   // your frontend
-    "https://webdevfinal-ai.onrender.com"          // your backend calling itself
-  ],
-  methods: ["GET", "POST"]
-}));
-
-
-// --- AI CHAT ROUTE ---
-app.post("/api/ai/chat", async (req, res) => {
-  try {
-    const userInput = req.body.message;
-
-    if (!userInput) {
-      return res.status(400).json({ error: "No message provided" });
-    }
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: "You are a watch expert assistant." },
-        { role: "user", content: userInput }
-      ],
-    });
-
-    return res.json({
-      reply: response.choices[0].message.content,
-    });
-
-  } catch (err) {
-    console.log("🔥 FULL AI ERROR BELOW 🔥");
-    console.log(err);
-    return res.status(500).json({ error: "AI request failed" });
-  }
-});
-
 
 // Test route
 app.get("/", (req, res) => {
@@ -72,18 +31,18 @@ app.get("/", (req, res) => {
 // CREATE a watch
 app.post("/api/watches", async (req, res) => {
   try {
-    const { brand, model, price, description } = req.body;
+    const { brand, model, price, description, image_url } = req.body;
 
     const result = await pool.query(
-      `INSERT INTO watches (brand, model, price, description)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO watches (brand, model, price, description, image_url)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [brand, model, price, description]
+      [brand, model, price, description, image_url || null]
     );
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error(" Create error:", err);
+    console.error("❌ Create error:", err);
     res.status(500).json({ error: "Failed to create watch" });
   }
 });
@@ -94,7 +53,7 @@ app.get("/api/watches", async (req, res) => {
     const result = await pool.query("SELECT * FROM watches ORDER BY id DESC");
     res.json(result.rows);
   } catch (err) {
-    console.error(" Read error:", err);
+    console.error("❌ Read error:", err);
     res.status(500).json({ error: "Failed to fetch watches" });
   }
 });
@@ -111,7 +70,7 @@ app.get("/api/watches/:id", async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(" Read single error:", err);
+    console.error("❌ Read single error:", err);
     res.status(500).json({ error: "Failed to fetch watch" });
   }
 });
@@ -119,14 +78,14 @@ app.get("/api/watches/:id", async (req, res) => {
 // UPDATE a watch
 app.put("/api/watches/:id", async (req, res) => {
   try {
-    const { brand, model, price, description } = req.body;
+    const { brand, model, price, description, image_url } = req.body;
 
     const result = await pool.query(
       `UPDATE watches
-       SET brand=$1, model=$2, price=$3, description=$4
-       WHERE id=$5
+       SET brand=$1, model=$2, price=$3, description=$4, image_url=$5
+       WHERE id=$6
        RETURNING *`,
-      [brand, model, price, description, req.params.id]
+      [brand, model, price, description, image_url, req.params.id]
     );
 
     if (result.rows.length === 0)
@@ -152,7 +111,7 @@ app.delete("/api/watches/:id", async (req, res) => {
 
     res.json({ message: "Watch deleted" });
   } catch (err) {
-    console.error(" Delete error:", err);
+    console.error("❌ Delete error:", err);
     res.status(500).json({ error: "Failed to delete watch" });
   }
 });
@@ -196,8 +155,123 @@ app.post("/api/ai/chat", async (req, res) => {
   }
 });
 
+// GET cart 
+app.get("/api/cart", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT cart_items.id, product_id, quantity, watches.*
+      FROM cart_items
+      JOIN watches ON watches.id = cart_items.product_id
+    `);
 
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Cart fetch error:", err);
+    res.status(500).json({ error: "Failed to fetch cart" });
+  }
+});
+
+// ADD to cart 
+app.post("/api/cart", async (req, res) => {
+  try {
+    const { product_id } = req.body;
+
+    // Check if the product already exists in cart
+    const existing = await pool.query(
+      "SELECT * FROM cart_items WHERE product_id = $1",
+      [product_id]
+    );
+
+    if (existing.rows.length > 0) {
+      const updated = await pool.query(
+        `UPDATE cart_items
+         SET quantity = quantity + 1
+         WHERE product_id = $1
+         RETURNING *`,
+        [product_id]
+      );
+      return res.json(updated.rows[0]);
+    }
+
+    const result = await pool.query(
+      `INSERT INTO cart_items (product_id, quantity)
+       VALUES ($1, 1)
+       RETURNING *`,
+      [product_id]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Add to cart error:", err);
+    res.status(500).json({ error: "Failed to add item to cart" });
+  }
+});
+
+// INCREASE cart item quantity
+app.put("/api/cart/increase/:id", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE cart_items
+       SET quantity = quantity + 1
+       WHERE id = $1
+       RETURNING *`,
+      [req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Increase qty error:", err);
+    res.status(500).json({ error: "Failed to increase quantity" });
+  }
+});
+
+// DECREASE cart item quantity
+app.put("/api/cart/decrease/:id", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE cart_items
+       SET quantity = quantity - 1
+       WHERE id = $1
+       RETURNING *`,
+      [req.params.id]
+    );
+
+    if (result.rows[0].quantity <= 0) {
+      await pool.query("DELETE FROM cart_items WHERE id = $1", [
+        req.params.id,
+      ]);
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Decrease qty error:", err);
+    res.status(500).json({ error: "Failed to decrease quantity" });
+  }
+});
+
+// REMOVE cart item
+app.delete("/api/cart/:id", async (req, res) => {
+  try {
+    await pool.query("DELETE FROM cart_items WHERE id = $1", [
+      req.params.id,
+    ]);
+    res.json({ message: "Item removed" });
+  } catch (err) {
+    console.error("Remove cart item error:", err);
+    res.status(500).json({ error: "Failed to remove item" });
+  }
+});
+
+// CLEAR cart 
+app.delete("/api/cart", async (req, res) => {
+  try {
+    await pool.query("DELETE FROM cart_items");
+    res.json({ message: "Cart cleared" });
+  } catch (err) {
+    console.error("Clear cart error:", err);
+    res.status(500).json({ error: "Failed to clear cart" });
+  }
+});
 
 // ----- START SERVER -----
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
