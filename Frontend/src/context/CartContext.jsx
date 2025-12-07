@@ -7,13 +7,17 @@ export const CartProvider = ({ children }) => {
     try {
       const raw = localStorage.getItem('cart');
       return raw ? JSON.parse(raw) : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   });
 
   useEffect(() => {
-    try { localStorage.setItem('cart', JSON.stringify(cart)); } catch (e) {}
+    try { 
+      localStorage.setItem('cart', JSON.stringify(cart)); 
+    } catch {
+      // Silently fail if localStorage is unavailable
+    }
   }, [cart]);
 
   const addItem = (product) => {
@@ -36,7 +40,6 @@ export const CartProvider = ({ children }) => {
         if (it.id === id) {
           const nextQty = it.quantity - 1;
           if (nextQty > 0) acc.push({ ...it, quantity: nextQty });
-          // if nextQty === 0, item is removed
         } else {
           acc.push(it);
         }

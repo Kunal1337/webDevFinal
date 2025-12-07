@@ -15,7 +15,6 @@ export default function Navbar() {
 
         <div className="navbar-actions">
           <Link to="/cart" className="navbar-action-link">Cart</Link>
-          <Link to="/login" className="navbar-action-link">Login</Link>
         </div>
       </div>
     </nav>

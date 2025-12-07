@@ -1,24 +1,98 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 
 const ProductCard = ({ product, onAddToCart }) => {
-  return (
-    <div className="bg-gradient-to-b from-blue-50 to-blue-100 border border-blue-100 p-5 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 transition text-center">
-      <div className="mb-3">
-        <img src={product.image} alt={product.name} className="w-full h-48 object-cover rounded-md" />
-      </div>
-      <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-      <p className="text-gray-600 text-sm mb-3">${Number(product.price).toFixed(2)}</p>
-      <div className="flex gap-2 justify-center">
-        <Link to={`/product/${product.id}`} className="btn-small">
-          View Details
-        </Link>
+  const [isAdding, setIsAdding] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState(null);
 
-        {onAddToCart ? (
-          <button className="btn-small" onClick={() => onAddToCart(product)}>
-            Add to Cart
+  const handleAddToCart = async () => {
+    console.log("🛒 Add to Cart clicked");
+    console.log("Product data:", product);
+    
+    if (!onAddToCart) {
+      console.error("❌ onAddToCart function not provided!");
+      setError("Add to cart function not available");
+      return;
+    }
+
+    if (!product.id) {
+      console.error("❌ Product ID is missing!");
+      setError("Product ID is missing");
+      return;
+    }
+
+    setIsAdding(true);
+    setError(null);
+
+    try {
+      console.log("🚀 Calling addItem with product:", product);
+      await onAddToCart(product);
+      console.log("✅ Item added successfully!");
+      
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    } catch (err) {
+      console.error("❌ Error adding to cart:", err);
+      setError("Failed to add item");
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  return (
+    <div className="product-card">
+      <div className="product-image-container">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="product-image"
+        />
+        
+        {showSuccess && (
+          <div className="product-success-overlay">
+            <span className="success-text">✓ Added!</span>
+          </div>
+        )}
+        
+        {error && (
+          <div className="product-error-overlay">
+            <span className="error-text">{error}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="product-info">
+        <h3 className="product-name">{product.name}</h3>
+        
+        {product.description && (
+          <p className="product-description">
+            {product.description}
+          </p>
+        )}
+
+        <p className="product-price">
+          ${Number(product.price).toFixed(2)}
+        </p>
+
+        <div className="product-actions">
+          <Link 
+            to={`/product/${product.id}`}
+            className="product-details-btn"
+          >
+            View Details
+          </Link>
+          
+          <button
+            onClick={handleAddToCart}
+            disabled={isAdding}
+            className="product-add-btn"
+          >
+            {isAdding ? 'Adding...' : 'Add to Cart'}
           </button>
-        ) : null}
+        </div>
       </div>
     </div>
   );

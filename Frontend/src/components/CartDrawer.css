@@ -1,4 +1,89 @@
-/* CartDrawer uses Tailwind utilities - keeping minimal CSS for complex animations */
+/* Cart Drawer Overlay */
+.cart-drawer-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-45 z-[80] opacity-0 pointer-events-none transition-opacity duration-300;
+}
 
-/* These can be replaced with inline Tailwind classes in CartDrawer.jsx */
+.cart-drawer-overlay-open {
+  @apply opacity-100 pointer-events-auto;
+}
 
+/* Cart Drawer */
+.cart-drawer {
+  @apply fixed top-0 right-0 w-80 h-full bg-darkBg shadow-lg p-6 z-[99] flex flex-col transition-all duration-300 translate-x-full;
+}
+
+.cart-drawer-open {
+  @apply translate-x-0;
+}
+
+/* Cart Drawer Header */
+.cart-drawer-header {
+  @apply flex justify-between items-center mb-5;
+}
+
+.cart-drawer-title {
+  @apply text-white text-2xl font-bold;
+}
+
+.cart-drawer-close-btn {
+  @apply bg-transparent border-none text-white text-2xl cursor-pointer hover:opacity-80 transition;
+}
+
+/* Empty State */
+.cart-drawer-empty {
+  @apply text-gray-300;
+}
+
+/* Cart Drawer List */
+.cart-drawer-list {
+  @apply list-none p-0 flex-1 overflow-y-auto;
+}
+
+.cart-drawer-item {
+  @apply flex items-center gap-3 bg-white bg-opacity-5 p-3 rounded-lg mb-3;
+}
+
+.cart-drawer-item-image {
+  @apply w-14 h-14 object-cover rounded;
+}
+
+.cart-drawer-item-info {
+  @apply flex-1;
+}
+
+.cart-drawer-item-name {
+  @apply text-white font-bold;
+}
+
+.cart-drawer-item-controls {
+  @apply text-gray-300 text-sm flex items-center gap-2;
+}
+
+.cart-drawer-qty-btn {
+  @apply bg-transparent border border-white border-opacity-10 text-white w-7 h-7 rounded inline-flex items-center justify-center cursor-pointer hover:bg-white hover:bg-opacity-5 transition;
+}
+
+.cart-drawer-qty-display {
+  @apply mx-2;
+}
+
+.cart-drawer-item-price {
+  @apply text-white font-bold;
+}
+
+.cart-drawer-remove-btn {
+  @apply bg-transparent border border-red-400 text-red-400 px-2 py-1 rounded text-sm cursor-pointer hover:bg-red-400 hover:text-white transition;
+}
+
+/* Cart Drawer Footer */
+.cart-drawer-footer {
+  @apply pt-3 border-t border-white border-opacity-10;
+}
+
+.cart-drawer-total {
+  @apply text-white font-bold mb-3;
+}
+
+.cart-drawer-clear-btn {
+  @apply w-full bg-primary border-none px-7 py-3 text-white rounded-md cursor-pointer font-medium hover:bg-primaryDark transition;
+}
