@@ -9,7 +9,11 @@ const config = {
   signOutRedirectURL: "http://localhost:5173",
   clientID: "jtzI2YwwPGhL9hhiEpXOvRWC3rca",
   baseUrl: "https://api.asgardeo.io/t/watchesio",
-  scope: ["openid", "profile", "email"]
+  scope: ["openid", "profile", "email"],
+  resourceServerURLs: [],
+  enablePKCE: true,
+  disableTrySignInSilently: true,
+  storage: "localStorage" // Changed from webWorker
 };
 
 createRoot(document.getElementById('root')).render(

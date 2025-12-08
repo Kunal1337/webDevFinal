@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useAuthContext } from "@asgardeo/auth-react";
 
@@ -11,6 +11,7 @@ import About from "./pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import CartPage from "./pages/Cart.jsx";
+import AdminPanel from "./pages/AdminPanel.jsx";
 
 import { CartProvider } from "./context/CartContext.jsx";
 import "./App.css";
@@ -18,9 +19,52 @@ import "./App.css";
 function AppContent() {
   const { state, signIn, signOut } = useAuthContext();
 
+  // Debug logging
+  useEffect(() => {
+    console.log("Auth State:", state);
+    console.log("Is Authenticated:", state.isAuthenticated);
+    console.log("Is Loading:", state.isLoading);
+  }, [state]);
+
+  // Show loading while auth is initializing
+  if (state.isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '18px',
+        color: '#666'
+      }}>
+        Loading authentication...
+      </div>
+    );
+  }
+
+  const handleSignIn = async () => {
+    try {
+      console.log("Initiating sign in...");
+      await signIn();
+    } catch (error) {
+      console.error("Sign in error:", error);
+      alert("Failed to sign in: " + error.message);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      console.log("Initiating sign out...");
+      await signOut();
+    } catch (error) {
+      console.error("Sign out error:", error);
+      alert("Failed to sign out: " + error.message);
+    }
+  };
+
   return (
     <Router>
-      {/* Simple floating auth indicator - won't break your layout */}
+      {/* Simple floating auth indicator */}
       <div style={{
         position: 'fixed',
         top: '10px',
@@ -40,7 +84,7 @@ function AppContent() {
               {state.username || state.email || 'User'}
             </span>
             <button 
-              onClick={() => signOut()}
+              onClick={handleSignOut}
               style={{
                 background: '#ef4444',
                 color: 'white',
@@ -57,7 +101,7 @@ function AppContent() {
           </>
         ) : (
           <button 
-            onClick={() => signIn()}
+            onClick={handleSignIn}
             style={{
               background: '#3b82f6',
               color: 'white',
@@ -83,6 +127,7 @@ function AppContent() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/admin" element={<AdminPanel />} />
       </Routes>
 
       <Footer />

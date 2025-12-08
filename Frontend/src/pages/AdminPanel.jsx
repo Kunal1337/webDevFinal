@@ -25,8 +25,22 @@ export default function AdminPanel() {
 
   // Check if user is admin
   useEffect(() => {
-    if (!state.isAuthenticated || state.email !== ADMIN_EMAIL) {
-      alert('Access denied. Admins only!');
+    console.log("=== ADMIN PANEL DEBUG ===");
+    console.log("Is Authenticated:", state.isAuthenticated);
+    console.log("Username:", state.username);
+    console.log("Expected Admin:", ADMIN_EMAIL);
+    console.log("Match:", state.username === ADMIN_EMAIL);
+    console.log("========================");
+
+    if (!state.isAuthenticated) {
+      alert('Please log in first!');
+      navigate('/');
+      return;
+    }
+
+    // Check username field since Asgardeo returns email there
+    if (state.username !== ADMIN_EMAIL) {
+      alert(`Access denied. Admins only!\n\nYour account: ${state.username}\nAdmin account: ${ADMIN_EMAIL}`);
       navigate('/');
     }
   }, [state, navigate]);
@@ -152,6 +166,11 @@ export default function AdminPanel() {
     });
     setShowAddForm(false);
   };
+
+  // Show loading or unauthorized message
+  if (!state.isAuthenticated || state.username !== ADMIN_EMAIL) {
+    return null; // Will redirect in useEffect
+  }
 
   return (
     <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', minHeight: '100vh', background: '#f9fafb' }}>
