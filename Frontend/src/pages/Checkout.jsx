@@ -103,6 +103,13 @@ const Checkout = () => {
     }
 
     try {
+      console.log('Auth state:', {
+        username: state.username,
+        email: state.email,
+        sub: state.sub,
+        fullState: state
+      });
+      console.log('Adding card with auth:', state.username || state.email);
       const response = await fetch(`${API_BASE}/api/cards`, {
         method: 'POST',
         headers: {
@@ -117,6 +124,8 @@ const Checkout = () => {
           cvv: newCard.cvv,
         }),
       });
+
+      console.log('Card API response status:', response.status);
 
       if (response.ok) {
         const data = await response.json();
@@ -133,8 +142,15 @@ const Checkout = () => {
         alert('Card added successfully!');
       } else {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Add card error response:', errorData);
-        alert(errorData.error || 'Failed to add card');
+        console.error('Add card error response:', response.status, errorData);
+        console.error('Request body was:', {
+          card_number: newCard.cardNumber.replace(/\s/g, ''),
+          cardholder_name: newCard.cardholderName,
+          expiry_month: parseInt(newCard.expiryMonth),
+          expiry_year: parseInt(newCard.expiryYear),
+          cvv: newCard.cvv,
+        });
+        alert(errorData.error || `Failed to add card (Status: ${response.status})`);
       }
     } catch (err) {
       console.error('Error adding card:', err);
