@@ -29,16 +29,26 @@ export default function CartDrawer({ isOpen, onClose }) {
         ) : (
           <>
             <ul className="cart-drawer-list">
-              {cart.map((item) => (
+              {cart.map((item) => {
+                const itemName = item.name || `${item.brand} ${item.model}`;
+                const itemImage = item.image || item.image_url;
+                
+                return (
                 <li key={item.id} className="cart-drawer-item">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="cart-drawer-item-image"
-                  />
+                  {itemImage ? (
+                    <img
+                      src={itemImage}
+                      alt={itemName}
+                      className="cart-drawer-item-image"
+                    />
+                  ) : (
+                    <div className="cart-drawer-item-image" style={{ background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>
+                      No Image
+                    </div>
+                  )}
 
                   <div className="cart-drawer-item-info">
-                    <p className="cart-drawer-item-name">{item.name}</p>
+                    <p className="cart-drawer-item-name">{itemName}</p>
                     <div className="cart-drawer-item-controls">
                       <button
                         className="cart-drawer-qty-btn"
@@ -67,7 +77,8 @@ export default function CartDrawer({ isOpen, onClose }) {
                     Remove
                   </button>
                 </li>
-              ))}
+              );
+              })}
             </ul>
 
             <div className="cart-drawer-footer">

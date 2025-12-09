@@ -1,33 +1,142 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
-import { Link } from 'react-router-dom';
+import ProductCard from '../components/ProductCard';
 
-const Cart = () => {
-  const { cart, removeItem, clearCart, increaseQty, decreaseQty, loading } = useCart();
+// Original images
+import gshock from "../assets/gshock1.webp";
+import omega from "../assets/omega1.webp";
+import submariner from "../assets/Submariner1.jpg";
+import tagheuer from "../assets/Tagheuer1.avif";
 
-  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+// New watches
+import classicSilver from "../assets/watch-1silver.webp";
+import luxuryGold from "../assets/watch-4.webp";
+import sportyBlack from "../assets/watch-3.webp";
+
+const API_BASE = "https://webdevfinal-2.onrender.com";
+
+// Map brand+model → correct image
+const imageMap = {
+  // New seed watches
+  "Classic Silver": classicSilver,
+  "Luxury Gold": luxuryGold,
+  "Sporty Black": sportyBlack,
+
+  // Original DB watches
+  "Casio G-Shock": gshock,
+  "Omega Speedmaster": omega,
+  "Rolex Submariner": submariner,
+  "Tag Heuer Carrera": tagheuer,
+};
+
+const Shop = () => {
+  const [watches, setWatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { addItem } = useCart();
+
+  useEffect(() => {
+    fetchWatches();
+  }, []);
+
+  const fetchWatches = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`${API_BASE}/api/watches`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch watches: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log("Fetched watches:", data);
+      setWatches(data);
+    } catch (err) {
+      console.error("Error fetching watches:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddToCart = async (watch) => {
+    try {
+      // First add to backend cart
+      const response = await fetch(`${API_BASE}/api/cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ product_id: watch.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add to cart');
+      }
+
+      // Then add to local cart context for immediate UI update
+      const name = `${watch.brand} ${watch.model}`;
+      const image = watch.image_url || imageMap[name] || gshock;
+      
+      addItem({
+        id: watch.id,
+        name: name,
+        brand: watch.brand,
+        model: watch.model,
+        price: parseFloat(watch.price),
+        description: watch.description,
+        image: image,
+        image_url: watch.image_url,
+      });
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      throw err;
+    }
+  };
+
+  // Transform watch data for ProductCard component
+  const transformWatchToProduct = (watch) => {
+    const name = `${watch.brand} ${watch.model}`;
+    const image = watch.image_url || imageMap[name] || gshock;
+    
+    return {
+      id: watch.id,
+      name: name,
+      brand: watch.brand,
+      model: watch.model,
+      price: parseFloat(watch.price),
+      description: watch.description,
+      image: image,
+      image_url: watch.image_url,
+    };
+  };
 
   if (loading) {
     return (
-      <div className="cart-page">
-        <div className="cart-container">
-          <h1 className="cart-title">Your Cart</h1>
-          <p className="cart-loading">Loading cart...</p>
+      <div className="w-full bg-brandNavy px-12 py-6 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-8">Shop</h1>
+          <p className="text-white">Loading watches...</p>
         </div>
       </div>
     );
   }
 
-  if (cart.length === 0) {
+  if (error) {
     return (
-      <div className="cart-page">
-        <div className="cart-container">
-          <h1 className="cart-title">Your Cart</h1>
-          <div className="cart-empty">
-            <p className="cart-empty-text">Your cart is empty</p>
-            <Link to="/shop" className="btn">
-              Continue Shopping
-            </Link>
+      <div className="w-full bg-brandNavy px-12 py-6 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-8">Shop</h1>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <p className="font-bold">Error loading watches</p>
+            <p>{error}</p>
+            <button 
+              onClick={fetchWatches}
+              className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Retry
+            </button>
           </div>
         </div>
       </div>
@@ -35,95 +144,28 @@ const Cart = () => {
   }
 
   return (
-    <div className="cart-page">
-      <div className="cart-container">
-        <h1 className="cart-title">Your Cart</h1>
-
-        <div className="cart-card">
-          <div className="cart-items">
-            {cart.map((item) => (
-              <div key={item.id} className="cart-item">
-                <div className="cart-item-image">
-                  {item.image_url ? (
-                    <img 
-                      src={item.image_url} 
-                      alt={`${item.brand} ${item.model}`}
-                      className="cart-item-img"
-                    />
-                  ) : (
-                    <div className="cart-item-no-image">
-                      No Image
-                    </div>
-                  )}
-                </div>
-
-                <div className="cart-item-info">
-                  <h3 className="cart-item-name">
-                    {item.brand} {item.model}
-                  </h3>
-                  <p className="cart-item-price">${item.price}</p>
-                </div>
-
-                <div className="cart-item-quantity">
-                  <button
-                    onClick={() => decreaseQty(item.id)}
-                    className="qty-btn"
-                  >
-                    -
-                  </button>
-                  <span className="qty-display">{item.quantity}</span>
-                  <button
-                    onClick={() => increaseQty(item.id)}
-                    className="qty-btn"
-                  >
-                    +
-                  </button>
-                </div>
-
-                <div className="cart-item-total">
-                  <p className="item-total-price">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => removeItem(item.id)}
-                  className="remove-btn"
-                >
-                  Remove
-                </button>
-              </div>
+    <div className="w-full bg-brandNavy px-12 py-6 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-white mb-8">Shop All Watches</h1>
+        
+        {watches.length === 0 ? (
+          <div className="bg-white p-8 rounded-lg">
+            <p className="text-gray-600 text-lg">No watches available at the moment.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {watches.map((watch) => (
+              <ProductCard
+                key={watch.id}
+                product={transformWatchToProduct(watch)}
+                onAddToCart={handleAddToCart}
+              />
             ))}
           </div>
-
-          <div className="cart-summary">
-            <div className="cart-total">
-              <span className="total-label">Total:</span>
-              <span className="total-amount">
-                ${total.toFixed(2)}
-              </span>
-            </div>
-
-            <div className="cart-actions">
-              <button
-                onClick={clearCart}
-                className="clear-cart-btn"
-              >
-                Clear Cart
-              </button>
-              <button className="checkout-btn">
-                Proceed to Checkout
-              </button>
-            </div>
-
-            <Link to="/shop" className="continue-shopping">
-              ← Continue Shopping
-            </Link>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default Cart;
+export default Shop;

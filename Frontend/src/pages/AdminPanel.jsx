@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '@asgardeo/auth-react';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE = 'https://webdevfinal-1.onrender.com';
+const API_BASE = 'https://webdevfinal-2.onrender.com';
 const ADMIN_EMAIL = 'watchesauth372@gmail.com';
 
 export default function AdminPanel() {

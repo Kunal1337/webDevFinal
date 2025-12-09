@@ -13,15 +13,25 @@ const CartPanel = ({ cart, onRemove, onClear }) => {
       ) : (
         <>
           <ul className="cart-panel-list">
-            {cart.map(item => (
+            {cart.map(item => {
+              const itemName = item.name || `${item.brand} ${item.model}`;
+              const itemImage = item.image || item.image_url;
+              
+              return (
               <li key={item.id} className="cart-panel-item">
-                <img 
-                  src={item.image} 
-                  alt={item.name} 
-                  className="cart-panel-item-image" 
-                />
+                {itemImage ? (
+                  <img 
+                    src={itemImage} 
+                    alt={itemName} 
+                    className="cart-panel-item-image" 
+                  />
+                ) : (
+                  <div className="cart-panel-item-image" style={{ background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    No Image
+                  </div>
+                )}
                 <div className="cart-panel-item-info">
-                  <div className="cart-panel-item-name">{item.name}</div>
+                  <div className="cart-panel-item-name">{itemName}</div>
                   <div className="cart-panel-item-controls">
                     <button 
                       className="qty-btn" 
@@ -48,7 +58,8 @@ const CartPanel = ({ cart, onRemove, onClear }) => {
                   Remove
                 </button>
               </li>
-            ))}
+            );
+            })}
           </ul>
           <div className="cart-panel-total">Total: ${total.toFixed(2)}</div>
           <div className="cart-panel-actions">

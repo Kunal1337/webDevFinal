@@ -12,7 +12,7 @@ import classicSilver from "../assets/watch-1silver.webp";
 import luxuryGold from "../assets/watch-4.webp";
 import sportyBlack from "../assets/watch-3.webp";
 
-const API_BASE = "https://webdevfinal-1.onrender.com";
+const API_BASE = "https://webdevfinal-2.onrender.com";
 
 // Map brand+model → correct image
 const imageMap = {
@@ -66,11 +66,12 @@ const Home = () => {
             ) : (
               featured.map((watch) => {
                 const name = `${watch.brand} ${watch.model}`;
+                const watchImage = watch.image_url || imageMap[name] || gshock;
 
                 return (
                   <div className="bg-gradient-to-b from-blue-50 to-blue-100 border border-blue-100 p-5 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 transition text-center" key={watch.id}>
                     <img
-                      src={imageMap[name] || gshock}
+                      src={watchImage}
                       alt={name}
                       className="w-full h-48 object-cover rounded-lg mb-3"
                     />
