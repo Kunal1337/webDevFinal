@@ -54,12 +54,21 @@ export const CartProvider = ({ children }) => {
         throw new Error('Failed to add to cart');
       }
 
-      // Update local state
+      // Get the response with cartItemId
+      const data = await response.json();
+
+      // Update local state with cartItemId
       setCart(prev => {
         const idx = prev.findIndex(p => p.id === product.id);
         if (idx === -1) {
-          return [...prev, { ...product, quantity: 1 }];
+          // New item - add with cartItemId from response
+          return [...prev, {
+            ...product,
+            cartItemId: data.id, // The cart item ID from backend
+            quantity: 1
+          }];
         }
+        // Item already exists - just increment quantity
         const next = prev.slice();
         next[idx] = { ...next[idx], quantity: next[idx].quantity + 1 };
         return next;
@@ -72,82 +81,71 @@ export const CartProvider = ({ children }) => {
 
   const increaseQty = async (id) => {
     try {
-      // Find the cart item
-      const cartItem = cart.find(item => item.id === id);
-      if (!cartItem || !cartItem.cartItemId) {
-        // If no cartItemId, try to add via product_id
-        const response = await fetch(`${API_BASE}/api/cart`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ product_id: id }),
-        });
-        if (response.ok) {
-          await fetchCart();
+      // Get current cart item before updating state
+      setCart(prev => {
+        const cartItem = prev.find(item => item.id === id);
+        if (!cartItem || !cartItem.cartItemId) {
+          console.warn('Cannot increase qty - no cartItemId found for item:', id);
+          return prev;
         }
-        return;
-      }
 
-      const response = await fetch(`${API_BASE}/api/cart/increase/${cartItem.cartItemId}`, {
-        method: 'PUT',
-      });
+        // Make API call in background
+        fetch(`${API_BASE}/api/cart/increase/${cartItem.cartItemId}`, {
+          method: 'PUT',
+        }).catch(err => console.error('Error increasing quantity on backend:', err));
 
-      if (response.ok) {
-        setCart(prev => prev.map(it => 
+        // Update UI immediately
+        return prev.map(it => 
           it.id === id ? { ...it, quantity: it.quantity + 1 } : it
-        ));
-      }
+        );
+      });
     } catch (err) {
-      console.error('Error increasing quantity:', err);
+      console.error('Error in increaseQty:', err);
     }
   };
 
   const decreaseQty = async (id) => {
     try {
-      const cartItem = cart.find(item => item.id === id);
-      if (!cartItem || !cartItem.cartItemId) return;
-
-      const response = await fetch(`${API_BASE}/api/cart/decrease/${cartItem.cartItemId}`, {
-        method: 'PUT',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.quantity <= 0) {
-          // Item was removed, refresh cart
-          await fetchCart();
-        } else {
-          setCart(prev => prev.map(it => 
-            it.id === id ? { ...it, quantity: it.quantity - 1 } : it
-          ));
+      // Get current cart item before updating state
+      setCart(prev => {
+        const cartItem = prev.find(item => item.id === id);
+        if (!cartItem || !cartItem.cartItemId) {
+          console.warn('Cannot decrease qty - no cartItemId found for item:', id);
+          return prev;
         }
-      }
+
+        // Make API call in background
+        fetch(`${API_BASE}/api/cart/decrease/${cartItem.cartItemId}`, {
+          method: 'PUT',
+        }).catch(err => console.error('Error decreasing quantity on backend:', err));
+
+        // Update UI immediately, removing if quantity would be 0 or less
+        return prev
+          .map(it => it.id === id ? { ...it, quantity: it.quantity - 1 } : it)
+          .filter(it => it.quantity > 0);
+      });
     } catch (err) {
-      console.error('Error decreasing quantity:', err);
+      console.error('Error in decreaseQty:', err);
     }
   };
 
   const removeItem = async (id) => {
     try {
+      // Find cartItemId first before removing
       const cartItem = cart.find(item => item.id === id);
-      if (!cartItem || !cartItem.cartItemId) {
-        // Fallback: just remove from local state
-        setCart(prev => prev.filter(i => i.id !== id));
-        return;
-      }
+      const cartItemId = cartItem?.cartItemId;
 
-      const response = await fetch(`${API_BASE}/api/cart/${cartItem.cartItemId}`, {
-        method: 'DELETE',
-      });
+      // Remove from state immediately
+      setCart(prev => prev.filter(i => i.id !== id));
 
-      if (response.ok) {
-        setCart(prev => prev.filter(i => i.id !== id));
+      // Then make API call
+      if (cartItemId) {
+        await fetch(`${API_BASE}/api/cart/${cartItemId}`, {
+          method: 'DELETE',
+        }).catch(err => console.error('Error removing item:', err));
       }
     } catch (err) {
-      console.error('Error removing item:', err);
-      // Still remove from local state on error
-      setCart(prev => prev.filter(i => i.id !== id));
+      console.error('Error in removeItem:', err);
     }
   };
 
