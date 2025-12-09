@@ -2,28 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
-import gshock from "../assets/gshock1.webp";
-import omega from "../assets/omega1.webp";
-import submariner from "../assets/Submariner1.jpg";
-import tagheuer from "../assets/Tagheuer1.avif";
-
-// New watches
-import classicSilver from "../assets/watch-1silver.webp";
-import luxuryGold from "../assets/watch-4.webp";
-import sportyBlack from "../assets/watch-3.webp";
-
-const imageMap = {
-  // New seed watches
-  "Classic Silver": classicSilver,
-  "Luxury Gold": luxuryGold,
-  "Sporty Black": sportyBlack,
-
-  // Original DB watches
-  "Casio G-Shock": gshock,
-  "Omega Speedmaster": omega,
-  "Rolex Submariner": submariner,
-  "Tag Heuer Carrera": tagheuer,
-};
 
 const API_BASE = "https://webdevfinal-2.onrender.com";
 
@@ -63,7 +41,8 @@ const ProductDetails = () => {
 
       // Add to local cart context
       const name = `${watch.brand} ${watch.model}`;
-      const image = watch.image_url || imageMap[name] || gshock;
+const image = watch.image_url;
+
       
       await addItem({
         id: watch.id,
@@ -88,14 +67,15 @@ const ProductDetails = () => {
 
   if (!watch) return <div className="w-full bg-brandNavy px-12 py-6"><h2 className="text-white">Loading...</h2></div>;
 
-  const imgKey = `${watch.brand} ${watch.model}`;
-  const watchImage = watch.image_url || imageMap[imgKey] || gshock;
+  // Always use the image_url from backend
+const watchImage = watch.image_url;
+
 
   return (
     <div className="w-full bg-brandNavy px-12 py-6">
       <div className="max-w-4xl mx-auto grid grid-cols-2 gap-10">
         <div>
-          <img src={watchImage} alt={imgKey} className="w-full rounded-lg shadow-lg" />
+<img src={watchImage} alt={watch.model} className="w-full rounded-lg shadow-lg" />
         </div>
 
         <div>

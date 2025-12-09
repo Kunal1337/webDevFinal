@@ -13,6 +13,7 @@ import ProductDetails from "./pages/ProductDetails.jsx";
 import CartPage from "./pages/Cart.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import Checkout from "./pages/Checkout.jsx";
+import AdminImageUpload from "./pages/AdminImageUpload";
 
 import { CartProvider } from "./context/CartContext.jsx";
 import "./App.css";
@@ -54,6 +55,8 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin/upload-image" element={<AdminImageUpload />} />
+
       </Routes>
 
       <Footer />

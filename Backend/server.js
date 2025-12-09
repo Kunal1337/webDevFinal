@@ -519,6 +519,36 @@ app.post("/api/checkout", async (req, res) => {
   }
 });
 
+// Update image URL for a specific watch
+app.put("/api/admin/update-image/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { image_url } = req.body;
+
+    if (!image_url) {
+      return res.status(400).json({ error: "image_url is required" });
+    }
+
+    const result = await pool.query(
+      "UPDATE watches SET image_url = $1 WHERE id = $2 RETURNING *",
+      [image_url, id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Watch not found" });
+    }
+
+    res.json({
+      message: "Image updated successfully!",
+      watch: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Error updating image:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
 // ----- START SERVER -----
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

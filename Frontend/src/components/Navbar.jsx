@@ -29,6 +29,8 @@ export default function Navbar({ isAuthenticated, username, onSignIn, onSignOut 
           <li><Link to="/shop" className="navbar-link">Shop</Link></li>
           <li><Link to="/about" className="navbar-link">About</Link></li>
           <li><Link to="/contact" className="navbar-link">Contact</Link></li>
+          {/* NEW ADMIN LINK */}
+    <li><Link to="/admin/upload-image" className="navbar-link">Admin Upload</Link></li>
         </ul>
 
         <div className="navbar-actions">
