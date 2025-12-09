@@ -36,7 +36,8 @@ export const CartProvider = ({ children }) => {
     } else if (!state.isAuthenticated) {
       setCart([]);
     }
-  }, [state.isAuthenticated, state.isLoading]);
+  }, 
+  [state.isAuthenticated, state.isLoading]);
 
   const fetchCart = async () => {
     const headers = getAuthHeaders();
