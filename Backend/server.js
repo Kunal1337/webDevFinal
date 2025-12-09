@@ -25,11 +25,13 @@ app.get("/api/cart", async (req, res) => {
 });
 
 // ADD to cart - now user-specific
+// ADD to cart - now user-specific
 app.post("/api/cart", async (req, res) => {
-  const username = getUsername(req);  // <-- This line
-  if (!username) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
     const { product_id, quantity = 1 } = req.body;
 
