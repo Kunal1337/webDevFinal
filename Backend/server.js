@@ -1,5 +1,72 @@
-// Replace your cart routes in server.js with these fixed versions:
+import express from "express";
+import cors from "cors";
+import pkg from "pg";
+import "dotenv/config";
+import OpenAI from "openai";
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
 
+
+const { Pool } = pkg;
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+
+
+
+
+cloudinary.config({ 
+  cloud_name: process.env.Root,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configure multer for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+// UPLOAD IMAGE ROUTE
+app.post("/api/upload-image", upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    // Upload to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: 'watches' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(req.file.buffer);
+    });
+
+    res.json({ 
+      success: true, 
+      url: result.secure_url 
+    });
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(500).json({ error: "Failed to upload image" });
+  }
+});
+
+
+
+// ----- DATABASE CONNECTION -----
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }, 
+});
+
+pool.connect()
+  .then(() => console.log("✅ Connected to Render PostgreSQL"))
+  .catch(err => console.error("❌ Database connection error:", err));
 // GET cart - now user-specific
 app.get("/api/cart", async (req, res) => {
   try {
