@@ -46,10 +46,12 @@
 
 .navbar-actions {
   @apply flex items-center gap-5;
+  margin-left: 2rem;
 }
 
 .navbar-action-link {
-  @apply text-sm text-gray-700 hover:text-primary transition;
+  @apply px-5 py-2.5 text-base font-semibold text-primary border-2 border-primary rounded-lg transition hover:bg-primary hover:text-white;
+  white-space: nowrap;
 }
 
 /* ========================================

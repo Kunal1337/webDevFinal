@@ -320,6 +320,205 @@ app.delete("/api/cart", async (req, res) => {
   }
 });
 
+// ----- CARD MANAGEMENT ROUTES -----
+
+// Helper function to extract username from Authorization header
+const getUsername = (req) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7); // Remove 'Bearer ' prefix
+  }
+  return null;
+};
+
+// GET all cards for a user
+app.get("/api/cards", async (req, res) => {
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const result = await pool.query(
+      `SELECT id, card_number, cardholder_name, expiry_month, expiry_year, created_at
+       FROM payment_cards
+       WHERE username = $1
+       ORDER BY created_at DESC`,
+      [username]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    // If table doesn't exist, return empty array
+    if (err.message.includes('does not exist')) {
+      return res.json([]);
+    }
+    console.error("Get cards error:", err);
+    res.status(500).json({ error: "Failed to fetch cards: " + err.message });
+  }
+});
+
+// ADD a new card
+app.post("/api/cards", async (req, res) => {
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { card_number, cardholder_name, expiry_month, expiry_year, cvv } = req.body;
+
+    if (!card_number || !cardholder_name || !expiry_month || !expiry_year) {
+      return res.status(400).json({ error: "Missing required card information" });
+    }
+
+    // Validate card number (remove spaces and check length)
+    const cleanedCardNumber = card_number.replace(/\s/g, '');
+    if (cleanedCardNumber.length < 13 || cleanedCardNumber.length > 19) {
+      return res.status(400).json({ error: "Invalid card number length" });
+    }
+
+    // Validate expiry month
+    if (expiry_month < 1 || expiry_month > 12) {
+      return res.status(400).json({ error: "Invalid expiry month" });
+    }
+
+    // Validate expiry year
+    const currentYear = new Date().getFullYear();
+    if (expiry_year < currentYear || expiry_year > currentYear + 50) {
+      return res.status(400).json({ error: "Invalid expiry year" });
+    }
+
+    // Note: CVV is stored in the database but we don't return it for security
+    const result = await pool.query(
+      `INSERT INTO payment_cards (username, card_number, cardholder_name, expiry_month, expiry_year, cvv)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, card_number, cardholder_name, expiry_month, expiry_year, created_at`,
+      [username, cleanedCardNumber, cardholder_name.trim(), parseInt(expiry_month), parseInt(expiry_year), cvv || '']
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Add card error:", err);
+    // Provide more specific error messages
+    if (err.code === '23505') { // Unique constraint violation
+      return res.status(400).json({ error: "This card is already registered" });
+    }
+    if (err.code === '23502') { // Not null violation
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    res.status(500).json({ error: "Failed to add card: " + err.message });
+  }
+});
+
+// DELETE a card
+app.delete("/api/cards/:id", async (req, res) => {
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const result = await pool.query(
+      `DELETE FROM payment_cards
+       WHERE id = $1 AND username = $2
+       RETURNING id`,
+      [req.params.id, username]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Card not found" });
+    }
+
+    res.json({ message: "Card deleted" });
+  } catch (err) {
+    console.error("Delete card error:", err);
+    res.status(500).json({ error: "Failed to delete card: " + err.message });
+  }
+});
+
+// ----- CHECKOUT ROUTE -----
+app.post("/api/checkout", async (req, res) => {
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { card_id, items, subtotal, tax, shipping, total } = req.body;
+
+    if (!card_id || !items || items.length === 0) {
+      return res.status(400).json({ error: "Missing required checkout information" });
+    }
+
+    // Verify card belongs to user
+    const cardCheck = await pool.query(
+      `SELECT id FROM payment_cards WHERE id = $1 AND username = $2`,
+      [card_id, username]
+    );
+
+    if (cardCheck.rows.length === 0) {
+      return res.status(403).json({ error: "Card not found or access denied" });
+    }
+
+    // Ensure orders table exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY,
+        user_email VARCHAR(255) NOT NULL,
+        card_id INTEGER NOT NULL,
+        subtotal DECIMAL(10, 2) NOT NULL,
+        tax DECIMAL(10, 2) NOT NULL,
+        shipping DECIMAL(10, 2) NOT NULL,
+        total DECIMAL(10, 2) NOT NULL,
+        status VARCHAR(50) DEFAULT 'completed',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS order_items (
+        id SERIAL PRIMARY KEY,
+        order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+        product_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL,
+        price DECIMAL(10, 2) NOT NULL
+      )
+    `);
+
+    // Create order
+    const orderResult = await pool.query(
+      `INSERT INTO orders (user_email, card_id, subtotal, tax, shipping, total)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id`,
+      [username, card_id, subtotal, tax, shipping, total]
+    );
+
+    const orderId = orderResult.rows[0].id;
+
+    // Add order items
+    for (const item of items) {
+      await pool.query(
+        `INSERT INTO order_items (order_id, product_id, quantity, price)
+         VALUES ($1, $2, $3, $4)`,
+        [orderId, item.product_id, item.quantity, item.price]
+      );
+    }
+
+    // Clear cart after successful checkout
+    await pool.query("DELETE FROM cart_items");
+
+    res.json({ 
+      success: true,
+      order_id: orderId,
+      message: "Order placed successfully"
+    });
+  } catch (err) {
+    console.error("Checkout error:", err);
+    res.status(500).json({ error: "Failed to process checkout" });
+  }
+});
+
 // ----- START SERVER -----
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
