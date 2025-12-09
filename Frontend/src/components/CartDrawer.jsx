@@ -11,82 +11,100 @@ export default function CartDrawer({ isOpen, onClose }) {
 
   return (
     <>
+      {/* Overlay */}
       <div
-        className={`cart-drawer-overlay ${isOpen ? "cart-drawer-overlay-open" : ""}`}
+        className={`fixed inset-0 bg-black bg-opacity-45 z-80 transition-opacity duration-300 ${
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
         onClick={onClose}
       ></div>
 
-      <div className={`cart-drawer ${isOpen ? "cart-drawer-open" : ""}`}>
-        <div className="cart-drawer-header">
-          <h2 className="cart-drawer-title">Your Cart</h2>
-          <button className="cart-drawer-close-btn" onClick={onClose}>
+      {/* Drawer */}
+      <div
+        className={`fixed top-0 right-0 w-80 h-full bg-darkBg shadow-lg p-6 z-99 flex flex-col transition-all duration-300 ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-white text-2xl font-bold">Your Cart</h2>
+          <button
+            className="bg-transparent border-none text-white text-2xl cursor-pointer hover:opacity-80 transition"
+            onClick={onClose}
+          >
             ✕
           </button>
         </div>
 
+        {/* Empty State */}
         {cart.length === 0 ? (
-          <p className="cart-drawer-empty">Your cart is empty</p>
+          <p className="text-gray-300">Your cart is empty</p>
         ) : (
           <>
-            <ul className="cart-drawer-list">
+            {/* Cart Items List */}
+            <ul className="list-none p-0 flex-1 overflow-y-auto">
               {cart.map((item) => {
                 const itemName = item.name || `${item.brand} ${item.model}`;
                 const itemImage = item.image || item.image_url;
-                
+
                 return (
-                <li key={item.id} className="cart-drawer-item">
-                  {itemImage ? (
-                    <img
-                      src={itemImage}
-                      alt={itemName}
-                      className="cart-drawer-item-image"
-                    />
-                  ) : (
-                    <div className="cart-drawer-item-image" style={{ background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>
-                      No Image
+                  <li key={item.id} className="flex items-center gap-3 bg-white bg-opacity-5 p-3 rounded-lg mb-3">
+                    {itemImage ? (
+                      <img
+                        src={itemImage}
+                        alt={itemName}
+                        className="w-14 h-14 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 object-cover rounded bg-gray-400 flex items-center justify-center text-xs">
+                        No Image
+                      </div>
+                    )}
+
+                    <div className="flex-1">
+                      <p className="text-white font-bold">{itemName}</p>
+                      <div className="text-gray-300 text-sm flex items-center gap-2">
+                        <button
+                          className="bg-transparent border border-white border-opacity-10 text-white w-7 h-7 rounded inline-flex items-center justify-center cursor-pointer hover:bg-white hover:bg-opacity-5 transition"
+                          onClick={() => decreaseQty(item.id)}
+                        >
+                          -
+                        </button>
+                        <span className="mx-2">{item.quantity}</span>
+                        <button
+                          className="bg-transparent border border-white border-opacity-10 text-white w-7 h-7 rounded inline-flex items-center justify-center cursor-pointer hover:bg-white hover:bg-opacity-5 transition"
+                          onClick={() => increaseQty(item.id)}
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
-                  )}
 
-                  <div className="cart-drawer-item-info">
-                    <p className="cart-drawer-item-name">{itemName}</p>
-                    <div className="cart-drawer-item-controls">
-                      <button
-                        className="cart-drawer-qty-btn"
-                        onClick={() => decreaseQty(item.id)}
-                      >
-                        -
-                      </button>
-                      <span className="cart-drawer-qty-display">{item.quantity}</span>
-                      <button
-                        className="cart-drawer-qty-btn"
-                        onClick={() => increaseQty(item.id)}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
+                    <p className="text-white font-bold">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </p>
 
-                  <p className="cart-drawer-item-price">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </p>
-
-                  <button
-                    className="cart-drawer-remove-btn"
-                    onClick={() => removeItem(item.id)}
-                  >
-                    Remove
-                  </button>
-                </li>
-              );
+                    <button
+                      className="bg-transparent border border-red-400 text-red-400 px-2 py-1 rounded text-sm cursor-pointer hover:bg-red-400 hover:text-white transition"
+                      onClick={() => removeItem(item.id)}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                );
               })}
             </ul>
 
-            <div className="cart-drawer-footer">
-              <p className="cart-drawer-total">
+            {/* Footer */}
+            <div className="pt-3 border-t border-white border-opacity-10">
+              <p className="text-white font-bold mb-3">
                 Total: ${total.toFixed(2)}
               </p>
 
-              <button className="cart-drawer-clear-btn" onClick={clearCart}>
+              <button
+                className="w-full bg-primary border-none px-7 py-3 text-white rounded-md cursor-pointer font-medium hover:bg-primaryDark transition"
+                onClick={clearCart}
+              >
                 Clear Cart
               </button>
             </div>
