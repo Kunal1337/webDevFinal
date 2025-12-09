@@ -48,20 +48,7 @@ const ProductDetails = () => {
     setAddSuccess(false);
 
     try {
-      // Add to backend cart
-      const response = await fetch(`${API_BASE}/api/cart`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ product_id: watch.id }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add to cart');
-      }
-
-      // Add to local cart context
+      // Use CartContext's addItem which handles the API call with auth
       const name = `${watch.brand} ${watch.model}`;
       const image = watch.image_url || imageMap[name] || gshock;
       
@@ -80,7 +67,7 @@ const ProductDetails = () => {
       setTimeout(() => setAddSuccess(false), 2000);
     } catch (err) {
       console.error("Error adding to cart:", err);
-      alert("Failed to add item to cart. Please try again.");
+      alert(err.message || "Failed to add item to cart. Please try again.");
     } finally {
       setIsAdding(false);
     }

@@ -1,11 +1,13 @@
+import { useAuthContext } from '@asgardeo/auth-react';
 
 
 const API_BASE = 'https://webdevfinal-2.onrender.com';
 
 
+
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '@asgardeo/auth-react';
 import { useCart } from '../context/CartContext';
 
 const ADMIN_EMAIL = 'watchesauth372@gmail.com';
@@ -468,5 +470,26 @@ const Checkout = () => {
     </div>
   );
 };
+
+
+const YourComponent = () => {
+  const { state } = useAuthContext();
+  
+  // Add this useEffect to log auth state
+  useEffect(() => {
+    console.log('=== AUTH STATE DEBUG ===');
+    console.log('isAuthenticated:', state.isAuthenticated);
+    console.log('isLoading:', state.isLoading);
+    console.log('username:', state.username);
+    console.log('email:', state.email);
+    console.log('sub:', state.sub);
+    console.log('Full state:', state);
+    console.log('=======================');
+  }, [state]);
+
+  // rest of your component...
+}
+
+
 
 export default Checkout;

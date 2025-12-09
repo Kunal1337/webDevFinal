@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuthContext } from '@asgardeo/auth-react';
+
 
 const Cart = () => {
   const navigate = useNavigate();

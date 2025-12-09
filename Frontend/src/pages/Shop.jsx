@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
+import { useAuthContext } from '@asgardeo/auth-react';
+
 
 // Original images
 import gshock from "../assets/gshock1.webp";
@@ -62,24 +64,11 @@ const Shop = () => {
 
   const handleAddToCart = async (watch) => {
     try {
-      // First add to backend cart
-      const response = await fetch(`${API_BASE}/api/cart`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ product_id: watch.id }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add to cart');
-      }
-
-      // Then add to local cart context for immediate UI update
+      // Use CartContext's addItem which handles the API call with auth
       const name = `${watch.brand} ${watch.model}`;
       const image = watch.image_url || imageMap[name] || gshock;
       
-      addItem({
+      await addItem({
         id: watch.id,
         name: name,
         brand: watch.brand,
