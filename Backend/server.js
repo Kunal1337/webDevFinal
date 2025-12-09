@@ -298,3 +298,6 @@ app.post("/api/checkout", async (req, res) => {
     res.status(500).json({ error: "Failed to process checkout" });
   }
 });
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
