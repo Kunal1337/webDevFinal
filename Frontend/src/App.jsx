@@ -5,15 +5,18 @@ import { useAuthContext } from "@asgardeo/auth-react";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
+
+import AdminPanel from './pages/AdminPanel';
+import OrderHistory from './pages/OrderHistory';
+
+
 import Home from "./pages/Home.jsx";
 import Shop from "./pages/Shop.jsx";
 import About from "./pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import CartPage from "./pages/Cart.jsx";
-import AdminPanel from "./pages/AdminPanel.jsx";
 import Checkout from "./pages/Checkout.jsx";
-import OrderHistory from './pages/OrderHistory';
 
 
 import { CartProvider } from "./context/CartContext.jsx";

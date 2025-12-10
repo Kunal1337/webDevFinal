@@ -102,7 +102,9 @@ app.post("/api/watches", async (req, res) => {
 // READ all watches
 app.get("/api/watches", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM watches ORDER BY id DESC");
+    const result = await pool.query(
+      "SELECT * FROM watches WHERE discontinued = FALSE ORDER BY id DESC"
+    );
     res.json(result.rows);
   } catch (err) {
     console.error("❌ Read error:", err);
@@ -127,75 +129,141 @@ app.get("/api/watches/:id", async (req, res) => {
   }
 });
 
-// UPDATE a watch
-app.put("/api/watches/:id", async (req, res) => {
+// ========== ADMIN ROUTES ==========
+
+// Helper function to check if user is admin
+const isAdmin = (req) => {
+  const username = getUsername(req);
+  const ADMIN_EMAILS = ['watchesauth372@gmail.com']; // Add admin emails here
+  return username && ADMIN_EMAILS.includes(username.toLowerCase());
+};
+
+// Toggle watch discontinued status
+app.patch("/api/admin/watches/:id/discontinue", async (req, res) => {
   try {
+    if (!isAdmin(req)) {
+      return res.status(403).json({ error: "Forbidden - Admin access required" });
+    }
+
+    const { discontinued } = req.body;
+    
+    const result = await pool.query(
+      "UPDATE watches SET discontinued = $1 WHERE id = $2 RETURNING *",
+      [discontinued, req.params.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Watch not found" });
+    }
+
+    res.json({
+      message: discontinued ? "Watch discontinued" : "Watch reactivated",
+      watch: result.rows[0]
+    });
+  } catch (err) {
+    console.error("Error toggling discontinued:", err);
+    res.status(500).json({ error: "Failed to update watch status" });
+  }
+});
+
+// Admin: Create a new watch
+app.post("/api/admin/watches", async (req, res) => {
+  try {
+    if (!isAdmin(req)) {
+      return res.status(403).json({ error: "Forbidden - Admin access required" });
+    }
+
     const { brand, model, price, description, image_url } = req.body;
+
+    if (!brand || !model || !price) {
+      return res.status(400).json({ error: "Brand, model, and price are required" });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO watches (brand, model, price, description, image_url, discontinued)
+       VALUES ($1, $2, $3, $4, $5, FALSE)
+       RETURNING *`,
+      [brand, model, price, description || '', image_url || null]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("❌ Admin create error:", err);
+    res.status(500).json({ error: "Failed to create watch" });
+  }
+});
+
+// Admin: Update a watch (full update)
+app.put("/api/admin/watches/:id", async (req, res) => {
+  try {
+    if (!isAdmin(req)) {
+      return res.status(403).json({ error: "Forbidden - Admin access required" });
+    }
+
+    const { brand, model, price, description, image_url, discontinued } = req.body;
+
+    if (!brand || !model || !price) {
+      return res.status(400).json({ error: "Brand, model, and price are required" });
+    }
 
     const result = await pool.query(
       `UPDATE watches
-       SET brand=$1, model=$2, price=$3, description=$4, image_url=$5
-       WHERE id=$6
+       SET brand=$1, model=$2, price=$3, description=$4, image_url=$5, discontinued=$6
+       WHERE id=$7
        RETURNING *`,
-      [brand, model, price, description, image_url, req.params.id]
+      [brand, model, price, description, image_url, discontinued !== undefined ? discontinued : false, req.params.id]
     );
 
-    if (result.rows.length === 0)
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: "Watch not found" });
+    }
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("❌ Update error:", err);
+    console.error("❌ Admin update error:", err);
     res.status(500).json({ error: "Failed to update watch" });
   }
 });
 
-// DELETE a watch
-app.delete("/api/watches/:id", async (req, res) => {
+// Admin: Permanently delete a watch
+app.delete("/api/admin/watches/:id", async (req, res) => {
   try {
+    if (!isAdmin(req)) {
+      return res.status(403).json({ error: "Forbidden - Admin access required" });
+    }
+
     const result = await pool.query(
       "DELETE FROM watches WHERE id = $1 RETURNING *",
       [req.params.id]
     );
 
-    if (result.rows.length === 0)
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: "Watch not found" });
+    }
 
-    res.json({ message: "Watch deleted" });
+    res.json({ message: "Watch permanently deleted", watch: result.rows[0] });
   } catch (err) {
-    console.error("❌ Delete error:", err);
+    console.error("❌ Admin delete error:", err);
     res.status(500).json({ error: "Failed to delete watch" });
   }
 });
 
-// Update image URL for a specific watch
-app.put("/api/admin/update-image/:id", async (req, res) => {
+// Get all watches including discontinued (for admin)
+app.get("/api/admin/watches", async (req, res) => {
   try {
-    const { id } = req.params;
-    const { image_url } = req.body;
-
-    if (!image_url) {
-      return res.status(400).json({ error: "image_url is required" });
+    if (!isAdmin(req)) {
+      return res.status(403).json({ error: "Forbidden - Admin access required" });
     }
 
-    const result = await pool.query(
-      "UPDATE watches SET image_url = $1 WHERE id = $2 RETURNING *",
-      [image_url, id]
-    );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Watch not found" });
-    }
-
-    res.json({
-      message: "Image updated successfully!",
-      watch: result.rows[0],
-    });
+    const result = await pool.query("SELECT * FROM watches ORDER BY discontinued ASC, id DESC");
+    res.json(result.rows);
   } catch (err) {
-    console.error("Error updating image:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("❌ Admin read error:", err);
+    res.status(500).json({ error: "Failed to fetch watches" });
   }
-});
+});  
+
+
 
 // ========== CART ROUTES ==========
 
