@@ -28,10 +28,12 @@ export default function Navbar({ isAuthenticated, username, onSignIn, onSignOut 
           <li><Link to="/" className="navbar-link">Home</Link></li>
           <li><Link to="/shop" className="navbar-link">Shop</Link></li>
           <li><Link to="/about" className="navbar-link">About</Link></li>
+          <Link to="/orders" className="navbar-link">Orders</Link>
           <li><Link to="/contact" className="navbar-link">Contact</Link></li>
         </ul>
 
         <div className="navbar-actions">
+          
           <Link to="/cart" className="navbar-action-link">Cart</Link>
           
           {isAuthenticated ? (

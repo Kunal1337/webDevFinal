@@ -13,6 +13,8 @@ import ProductDetails from "./pages/ProductDetails.jsx";
 import CartPage from "./pages/Cart.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import Checkout from "./pages/Checkout.jsx";
+import OrderHistory from './pages/OrderHistory';
+
 
 import { CartProvider } from "./context/CartContext.jsx";
 import "./App.css";
@@ -51,6 +53,7 @@ function AppContent() {
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<OrderHistory />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<AdminPanel />} />

@@ -545,6 +545,179 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+
+// ========== ORDER HISTORY ROUTE ==========
+
+// GET order history for a user
+app.get("/api/orders", async (req, res) => {
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const result = await pool.query(`
+      SELECT 
+        orders.id,
+        orders.username,
+        orders.card_id,
+        orders.subtotal,
+        orders.tax,
+        orders.shipping,
+        orders.total,
+        orders.status,
+        orders.created_at,
+        json_agg(
+          json_build_object(
+            'product_id', order_items.product_id,
+            'quantity', order_items.quantity,
+            'price', order_items.price,
+            'brand', watches.brand,
+            'model', watches.model,
+            'image_url', watches.image_url,
+            'description', watches.description
+          )
+        ) as items
+      FROM orders
+      LEFT JOIN order_items ON orders.id = order_items.order_id
+      LEFT JOIN watches ON order_items.product_id = watches.id
+      WHERE orders.username = $1
+      GROUP BY orders.id
+      ORDER BY orders.created_at DESC
+    `, [username]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Get orders error:", err);
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+});
+
+// GET single order details
+app.get("/api/orders/:id", async (req, res) => {
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const result = await pool.query(`
+      SELECT 
+        orders.*,
+        json_agg(
+          json_build_object(
+            'product_id', order_items.product_id,
+            'quantity', order_items.quantity,
+            'price', order_items.price,
+            'brand', watches.brand,
+            'model', watches.model,
+            'image_url', watches.image_url
+          )
+        ) as items
+      FROM orders
+      LEFT JOIN order_items ON orders.id = order_items.order_id
+      LEFT JOIN watches ON order_items.product_id = watches.id
+      WHERE orders.id = $1 AND orders.username = $2
+      GROUP BY orders.id
+    `, [req.params.id, username]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Get order error:", err);
+    res.status(500).json({ error: "Failed to fetch order" });
+  }
+});
+
+// ========== ORDER HISTORY ROUTE ==========
+
+// GET order history for a user
+app.get("/api/orders", async (req, res) => {
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const result = await pool.query(`
+      SELECT 
+        orders.id,
+        orders.username,
+        orders.card_id,
+        orders.subtotal,
+        orders.tax,
+        orders.shipping,
+        orders.total,
+        orders.status,
+        orders.created_at,
+        json_agg(
+          json_build_object(
+            'product_id', order_items.product_id,
+            'quantity', order_items.quantity,
+            'price', order_items.price,
+            'brand', watches.brand,
+            'model', watches.model,
+            'image_url', watches.image_url,
+            'description', watches.description
+          )
+        ) as items
+      FROM orders
+      LEFT JOIN order_items ON orders.id = order_items.order_id
+      LEFT JOIN watches ON order_items.product_id = watches.id
+      WHERE orders.username = $1
+      GROUP BY orders.id
+      ORDER BY orders.created_at DESC
+    `, [username]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Get orders error:", err);
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+});
+
+// GET single order details
+app.get("/api/orders/:id", async (req, res) => {
+  try {
+    const username = getUsername(req);
+    if (!username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const result = await pool.query(`
+      SELECT 
+        orders.*,
+        json_agg(
+          json_build_object(
+            'product_id', order_items.product_id,
+            'quantity', order_items.quantity,
+            'price', order_items.price,
+            'brand', watches.brand,
+            'model', watches.model,
+            'image_url', watches.image_url
+          )
+        ) as items
+      FROM orders
+      LEFT JOIN order_items ON orders.id = order_items.order_id
+      LEFT JOIN watches ON order_items.product_id = watches.id
+      WHERE orders.id = $1 AND orders.username = $2
+      GROUP BY orders.id
+    `, [req.params.id, username]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Get order error:", err);
+    res.status(500).json({ error: "Failed to fetch order" });
+  }
+});
+
 app.post("/api/ai/chat", async (req, res) => {
   try {
     const { message } = req.body;
