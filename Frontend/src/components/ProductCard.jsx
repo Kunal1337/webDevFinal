@@ -8,11 +8,8 @@ const ProductCard = ({ product, onAddToCart }) => {
   const [error, setError] = useState(null);
 
   const handleAddToCart = async () => {
-    console.log("🛒 Add to Cart clicked");
-    console.log("Product data:", product);
-    
     if (!onAddToCart) {
-      console.error("❌ onAddToCart function not provided!");
+      console.error("Add to cart callback not provided");
       setError("Add to cart function not available");
       return;
     }
@@ -27,14 +24,11 @@ const ProductCard = ({ product, onAddToCart }) => {
     setError(null);
 
     try {
-      console.log("🚀 Calling addItem with product:", product);
       await onAddToCart(product);
-      console.log("✅ Item added successfully!");
-      
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (err) {
-      console.error("❌ Error adding to cart:", err);
+      console.error("Error adding to cart:", err);
       setError("Failed to add item");
       setTimeout(() => setError(null), 3000);
     } finally {

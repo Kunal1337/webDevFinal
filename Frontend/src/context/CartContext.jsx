@@ -102,7 +102,7 @@ export const CartProvider = ({ children }) => {
       return true;
     } catch (err) {
       console.error('Error adding to cart:', err);
-      alert(err.message || 'Failed to add item to cart');
+      // Silent fail - don't alert user
       throw err;
     }
   };
@@ -124,7 +124,7 @@ export const CartProvider = ({ children }) => {
       await fetchCart();
     } catch (err) {
       console.error('Error removing item:', err);
-      alert('Failed to remove item from cart');
+      // Silent fail - don't alert user
     }
   };
 
@@ -145,7 +145,7 @@ export const CartProvider = ({ children }) => {
       await fetchCart();
     } catch (err) {
       console.error('Error increasing quantity:', err);
-      alert('Failed to update quantity');
+      // Silent fail - don't alert user
     }
   };
 
@@ -166,7 +166,7 @@ export const CartProvider = ({ children }) => {
       await fetchCart();
     } catch (err) {
       console.error('Error decreasing quantity:', err);
-      alert('Failed to update quantity');
+      // Silent fail - don't alert user
     }
   };
 
@@ -187,7 +187,7 @@ export const CartProvider = ({ children }) => {
       setCart([]);
     } catch (err) {
       console.error('Error clearing cart:', err);
-      alert('Failed to clear cart');
+      // Silent fail
     }
   };
 

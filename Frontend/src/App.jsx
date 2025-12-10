@@ -18,6 +18,7 @@ import ProductDetails from "./pages/ProductDetails.jsx";
 import CartPage from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
 
+import FloatingChat from './components/FloatingChat';
 
 import { CartProvider } from "./context/CartContext.jsx";
 import "./App.css";
@@ -62,7 +63,10 @@ function AppContent() {
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
 
-      <Footer />
+      <Footer/> 
+                    <FloatingChat />
+      
+
     </Router>
   );
 }

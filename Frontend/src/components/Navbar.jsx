@@ -9,7 +9,7 @@ export default function Navbar({ isAuthenticated, username, onSignIn, onSignOut 
       await onSignIn();
     } catch (error) {
       console.error("Sign in error:", error);
-      alert("Failed to sign in: " + (error.message || "Unknown error"));
+      // User will see auth UI for retry
     }
   };
 
@@ -18,7 +18,7 @@ export default function Navbar({ isAuthenticated, username, onSignIn, onSignOut 
       await onSignOut();
     } catch (error) {
       console.error("Sign out error:", error);
-      alert("Failed to sign out: " + (error.message || "Unknown error"));
+      // User will see auth UI for retry
     }
   };
 

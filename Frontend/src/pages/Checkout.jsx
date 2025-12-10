@@ -105,13 +105,7 @@ const Checkout = () => {
     }
 
     try {
-      console.log('Auth state:', {
-        username: state.username,
-        email: state.email,
-        sub: state.sub,
-        fullState: state
-      });
-      console.log('Adding card with auth:', state.username || state.email);
+      // Auth validation passed
       const response = await fetch(`${API_BASE}/api/cards`, {
         method: 'POST',
         headers: {
@@ -127,9 +121,7 @@ const Checkout = () => {
         }),
       });
 
-      console.log('Card API response status:', response.status);
-
-      if (response.ok) {
+      if (!response.ok) {
         const data = await response.json();
         setCards([...cards, data]);
         setSelectedCardId(data.id);
@@ -477,14 +469,6 @@ const YourComponent = () => {
   
   // Add this useEffect to log auth state
   useEffect(() => {
-    console.log('=== AUTH STATE DEBUG ===');
-    console.log('isAuthenticated:', state.isAuthenticated);
-    console.log('isLoading:', state.isLoading);
-    console.log('username:', state.username);
-    console.log('email:', state.email);
-    console.log('sub:', state.sub);
-    console.log('Full state:', state);
-    console.log('=======================');
   }, [state]);
 
   // rest of your component...

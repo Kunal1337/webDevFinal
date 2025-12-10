@@ -58,7 +58,7 @@ const AdminPanel = () => {
       setWatches(data);
     } catch (err) {
       console.error('Error fetching watches:', err);
-      alert('Failed to fetch watches: ' + err.message);
+      // Error logged - UI will show loading state
     } finally {
       setLoading(false);
     }
@@ -93,7 +93,6 @@ const AdminPanel = () => {
       return uploadData.url;
     } catch (err) {
       console.error('Error uploading image:', err);
-      alert('Failed to upload image: ' + err.message);
       return null;
     } finally {
       setUploadingImage(false);
@@ -158,7 +157,7 @@ const AdminPanel = () => {
       await fetchWatches();
     } catch (err) {
       console.error('Error adding watch:', err);
-      alert('Failed to add watch: ' + err.message);
+      // Silent fail - user can retry
     }
   };
 
@@ -199,7 +198,7 @@ const AdminPanel = () => {
       await fetchWatches();
     } catch (err) {
       console.error('Error updating watch:', err);
-      alert('Failed to update watch: ' + err.message);
+      // Silent fail - user can retry
     }
   };
 
@@ -226,7 +225,7 @@ const AdminPanel = () => {
       await fetchWatches();
     } catch (err) {
       console.error('Error toggling discontinued:', err);
-      alert('Failed to update status: ' + err.message);
+      // Silent fail - UI will revert
     }
   };
 
@@ -250,7 +249,7 @@ const AdminPanel = () => {
       await fetchWatches();
     } catch (err) {
       console.error('Error deleting watch:', err);
-      alert('Failed to delete watch: ' + err.message);
+      // Silent fail - user can retry
     }
   };
 

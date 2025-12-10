@@ -52,7 +52,7 @@ const Shop = () => {
       }
       
       const data = await response.json();
-      console.log("Fetched watches:", data);
+      // Data fetched successfully
       setWatches(data);
     } catch (err) {
       console.error("Error fetching watches:", err);
