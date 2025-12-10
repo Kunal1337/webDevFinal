@@ -4,16 +4,24 @@ import { AuthProvider } from '@asgardeo/auth-react'
 import './index.css'
 import App from './App.jsx'
 
+const isLocalhost = window.location.hostname === "localhost";
+
+// If local → redirect to localhost
+// If deployed → redirect to your Render site
+const redirectURL = isLocalhost
+  ? "http://localhost:5173"
+  : "https://watch-ecommerce-ttrm.onrender.com";
+
 const config = {
-  signInRedirectURL: "http://localhost:5173",
-  signOutRedirectURL: "http://localhost:5173",
+  signInRedirectURL: redirectURL + "/login",
+  signOutRedirectURL: redirectURL,
   clientID: "jtzI2YwwPGhL9hhiEpXOvRWC3rca",
   baseUrl: "https://api.asgardeo.io/t/watchesio",
   scope: ["openid", "profile", "email"],
   resourceServerURLs: [],
   enablePKCE: true,
   disableTrySignInSilently: true,
-  storage: "localStorage" // Changed from webWorker
+  storage: "localStorage"
 };
 
 createRoot(document.getElementById('root')).render(
