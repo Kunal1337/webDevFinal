@@ -1,15 +1,14 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { useAuthContext } from "@asgardeo/auth-react";
 
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
-import Login from "./pages/Login";
 import AdminPanel from './pages/AdminPanel';
 import OrderHistory from './pages/OrderHistory';
 
-
+import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
 import Shop from "./pages/Shop.jsx";
 import About from "./pages/About.jsx";
@@ -23,7 +22,7 @@ import FloatingChat from './components/FloatingChat';
 import { CartProvider } from "./context/CartContext.jsx";
 import "./App.css";
 
-function AppContent() {
+function AppRoutes() {
   const { state, signIn, signOut } = useAuthContext();
 
   // Show loading while auth is initializing
@@ -43,7 +42,7 @@ function AppContent() {
   }
 
   return (
-    <Router>
+    <>
       <Navbar 
         isAuthenticated={state.isAuthenticated}
         username={state.username || state.email}
@@ -64,18 +63,18 @@ function AppContent() {
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
 
-      <Footer/> 
-                    <FloatingChat />
-      
-
-    </Router>
+      <Footer /> 
+      <FloatingChat />
+    </>
   );
 }
 
 export default function App() {
   return (
     <CartProvider>
-      <AppContent />
+      <Router>
+        <AppRoutes />
+      </Router>
     </CartProvider>
   );
 }
