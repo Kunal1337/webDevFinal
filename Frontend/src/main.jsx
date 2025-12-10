@@ -13,15 +13,15 @@ const redirectURL = isLocalhost
   : "https://watch-ecommerce-ttrm.onrender.com";
 
 const config = {
-  signInRedirectURL: redirectURL + "/login",
+  signInRedirectURL: redirectURL,  // ← Remove the "/login" part
   signOutRedirectURL: redirectURL,
   clientID: "jtzI2YwwPGhL9hhiEpXOvRWC3rca",
   baseUrl: "https://api.asgardeo.io/t/watchesio",
   scope: ["openid", "profile", "email"],
   resourceServerURLs: [],
   enablePKCE: true,
-  disableTrySignInSilently: true,
-  storage: "sessionStorage"  // ← Change this
+  disableTrySignInSilently: false,
+  storage: "sessionStorage"  // or "webWorker" or "localStorage"
 };
 
 createRoot(document.getElementById('root')).render(

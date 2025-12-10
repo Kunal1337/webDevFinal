@@ -5,7 +5,7 @@ import { useAuthContext } from "@asgardeo/auth-react";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
-
+import Login from "./pages/Login";
 import AdminPanel from './pages/AdminPanel';
 import OrderHistory from './pages/OrderHistory';
 
@@ -52,6 +52,7 @@ function AppContent() {
       />
 
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetails />} />

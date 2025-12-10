@@ -9,7 +9,17 @@ import { v2 as cloudinary } from 'cloudinary';
 const { Pool } = pkg;
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://watch-ecommerce-ttrm.onrender.com"
+    ],
+    methods: "GET,POST,PUT,PATCH,DELETE",
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+  })
+);
 app.use(express.json());
 
 cloudinary.config({ 
@@ -131,7 +141,6 @@ app.get("/api/watches/:id", async (req, res) => {
 
 // ========== ADMIN ROUTES ==========
 
-// Helper function to check if user is admin
 // Helper function to check if user is admin
 const isAdmin = (req) => {
   const username = getUsername(req);
