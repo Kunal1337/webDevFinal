@@ -21,7 +21,7 @@ const config = {
   resourceServerURLs: [],
   enablePKCE: true,
   disableTrySignInSilently: true,
-  storage: "localStorage"
+  storage: "sessionStorage"  // ← Change this
 };
 
 createRoot(document.getElementById('root')).render(

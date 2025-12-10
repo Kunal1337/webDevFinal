@@ -132,6 +132,7 @@ app.get("/api/watches/:id", async (req, res) => {
 // ========== ADMIN ROUTES ==========
 
 // Helper function to check if user is admin
+// Helper function to check if user is admin
 const isAdmin = (req) => {
   const username = getUsername(req);
   const ADMIN_EMAILS = ['watchesauth372@gmail.com']; // Add admin emails here
