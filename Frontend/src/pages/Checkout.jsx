@@ -82,75 +82,67 @@ const Checkout = () => {
   };
 
   const handleAddCard = async (e) => {
-    e.preventDefault();
-    
-    if (newCard.cardNumber.length < 16 || newCard.cardNumber.length > 19) {
-      alert('Please enter a valid card number');
-      return;
-    }
-    
-    if (!newCard.cardholderName.trim()) {
-      alert('Please enter cardholder name');
-      return;
-    }
-    
-    if (!newCard.expiryMonth || !newCard.expiryYear) {
-      alert('Please enter expiry date');
-      return;
-    }
-    
-    if (newCard.cvv.length < 3 || newCard.cvv.length > 4) {
-      alert('Please enter a valid CVV');
-      return;
-    }
+  e.preventDefault();
+  
+  if (newCard.cardNumber.length < 16 || newCard.cardNumber.length > 19) {
+    alert('Please enter a valid card number');
+    return;
+  }
+  
+  if (!newCard.cardholderName.trim()) {
+    alert('Please enter cardholder name');
+    return;
+  }
+  
+  if (!newCard.expiryMonth || !newCard.expiryYear) {
+    alert('Please enter expiry date');
+    return;
+  }
+  
+  if (newCard.cvv.length < 3 || newCard.cvv.length > 4) {
+    alert('Please enter a valid CVV');
+    return;
+  }
 
-    try {
-      // Auth validation passed
-      const response = await fetch(`${API_BASE}/api/cards`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${state.username || state.email}`,
-        },
-        body: JSON.stringify({
-          card_number: newCard.cardNumber.replace(/\s/g, ''),
-          cardholder_name: newCard.cardholderName,
-          expiry_month: parseInt(newCard.expiryMonth),
-          expiry_year: parseInt(newCard.expiryYear),
-          cvv: newCard.cvv,
-        }),
+  try {
+    const response = await fetch(`${API_BASE}/api/cards`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${state.username || state.email}`,
+      },
+      body: JSON.stringify({
+        card_number: newCard.cardNumber.replace(/\s/g, ''),
+        cardholder_name: newCard.cardholderName,
+        expiry_month: parseInt(newCard.expiryMonth),
+        expiry_year: parseInt(newCard.expiryYear),
+        cvv: newCard.cvv,
+      }),
+    });
+
+    if (response.ok) {  // ← FIXED: Changed from !response.ok
+      const data = await response.json();
+      setCards([...cards, data]);
+      setSelectedCardId(data.id);
+      setShowAddCardForm(false);
+      setNewCard({
+        cardNumber: '',
+        cardholderName: '',
+        expiryMonth: '',
+        expiryYear: '',
+        cvv: '',
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        setCards([...cards, data]);
-        setSelectedCardId(data.id);
-        setShowAddCardForm(false);
-        setNewCard({
-          cardNumber: '',
-          cardholderName: '',
-          expiryMonth: '',
-          expiryYear: '',
-          cvv: '',
-        });
-        alert('Card added successfully!');
-      } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Add card error response:', response.status, errorData);
-        console.error('Request body was:', {
-          card_number: newCard.cardNumber.replace(/\s/g, ''),
-          cardholder_name: newCard.cardholderName,
-          expiry_month: parseInt(newCard.expiryMonth),
-          expiry_year: parseInt(newCard.expiryYear),
-          cvv: newCard.cvv,
-        });
-        alert(errorData.error || `Failed to add card (Status: ${response.status})`);
-      }
-    } catch (err) {
-      console.error('Error adding card:', err);
-      alert('Network error: Failed to add card');
+      alert('Card added successfully!');
+    } else {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      console.error('Add card error response:', response.status, errorData);
+      alert(errorData.error || `Failed to add card (Status: ${response.status})`);
     }
-  };
+  } catch (err) {
+    console.error('Error adding card:', err);
+    alert('Network error: Failed to add card');
+  }
+};
 
   const formatCardNumber = (value) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');

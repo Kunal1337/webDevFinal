@@ -9,17 +9,7 @@ import { v2 as cloudinary } from 'cloudinary';
 const { Pool } = pkg;
 
 const app = express();
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://watch-ecommerce-ttrm.onrender.com"
-    ],
-    methods: "GET,POST,PUT,PATCH,DELETE",
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 cloudinary.config({ 
@@ -39,8 +29,8 @@ const pool = new Pool({
 });
 
 pool.connect()
-  .then(() => console.log("✅ Connected to Render PostgreSQL"))
-  .catch(err => console.error("❌ Database connection error:", err));
+  .then(() => console.log("âœ… Connected to Render PostgreSQL"))
+  .catch(err => console.error("âŒ Database connection error:", err));
 
 // ----- HELPER FUNCTION -----
 // Helper function to extract username from Authorization header
@@ -104,7 +94,7 @@ app.post("/api/watches", async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error("❌ Create error:", err);
+    console.error("âŒ Create error:", err);
     res.status(500).json({ error: "Failed to create watch" });
   }
 });
@@ -117,7 +107,7 @@ app.get("/api/watches", async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ Read error:", err);
+    console.error("âŒ Read error:", err);
     res.status(500).json({ error: "Failed to fetch watches" });
   }
 });
@@ -134,13 +124,14 @@ app.get("/api/watches/:id", async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("❌ Read single error:", err);
+    console.error("âŒ Read single error:", err);
     res.status(500).json({ error: "Failed to fetch watch" });
   }
 });
 
 // ========== ADMIN ROUTES ==========
 
+// Helper function to check if user is admin
 // Helper function to check if user is admin
 const isAdmin = (req) => {
   const username = getUsername(req);
@@ -198,7 +189,7 @@ app.post("/api/admin/watches", async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error("❌ Admin create error:", err);
+    console.error("âŒ Admin create error:", err);
     res.status(500).json({ error: "Failed to create watch" });
   }
 });
@@ -230,7 +221,7 @@ app.put("/api/admin/watches/:id", async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("❌ Admin update error:", err);
+    console.error("âŒ Admin update error:", err);
     res.status(500).json({ error: "Failed to update watch" });
   }
 });
@@ -253,7 +244,7 @@ app.delete("/api/admin/watches/:id", async (req, res) => {
 
     res.json({ message: "Watch permanently deleted", watch: result.rows[0] });
   } catch (err) {
-    console.error("❌ Admin delete error:", err);
+    console.error("âŒ Admin delete error:", err);
     res.status(500).json({ error: "Failed to delete watch" });
   }
 });
@@ -268,7 +259,7 @@ app.get("/api/admin/watches", async (req, res) => {
     const result = await pool.query("SELECT * FROM watches ORDER BY discontinued ASC, id DESC");
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ Admin read error:", err);
+    console.error("âŒ Admin read error:", err);
     res.status(500).json({ error: "Failed to fetch watches" });
   }
 });  
@@ -832,4 +823,4 @@ app.post("/api/ai/chat", async (req, res) => {
 
 // ========== START SERVER ==========
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, '0.0.0.0', () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`âœ… Server running on port ${PORT}`));
