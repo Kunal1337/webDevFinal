@@ -6,8 +6,7 @@ import App from './App.jsx'
 
 const isLocalhost = window.location.hostname === "localhost";
 
-// If local â†’ redirect to localhost
-// If deployed â†’ redirect to your Render site
+// Remove trailing slash from production URL
 const redirectURL = isLocalhost
   ? "http://localhost:5173"
   : "https://watch-ecommerce-ttrm.onrender.com";
@@ -23,6 +22,12 @@ const config = {
   disableTrySignInSilently: true,
   storage: "localStorage"
 };
+
+console.log("🔧 Asgardeo Config:", {
+  signInRedirectURL: config.signInRedirectURL,
+  signOutRedirectURL: config.signOutRedirectURL,
+  environment: isLocalhost ? "local" : "production"
+});
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

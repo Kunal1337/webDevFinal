@@ -9,7 +9,13 @@ import { v2 as cloudinary } from 'cloudinary';
 const { Pool } = pkg;
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173', // Local dev
+    'https://watch-ecommerce-ttrm.onrender.com' // Production frontend
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 cloudinary.config({ 
