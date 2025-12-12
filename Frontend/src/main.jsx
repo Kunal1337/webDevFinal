@@ -10,7 +10,7 @@ const isLocalhost = window.location.hostname === "localhost";
 // If deployed â†’ redirect to your Render site
 const redirectURL = isLocalhost
   ? "http://localhost:5173"
-  : "https://watch-ecommerce-ttrm.onrender.com/";
+  : "https://watch-ecommerce-ttrm.onrender.com";
 
 const config = {
   signInRedirectURL: redirectURL + "/login",
