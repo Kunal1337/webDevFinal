@@ -12,7 +12,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:5173', // Local dev
-    'https://watch-ecommerce-ttrm.onrender.com' // Production frontend
+    'https://webdevfinal-f.onrender.com/' // Production frontend
   ],
   credentials: true
 }));
