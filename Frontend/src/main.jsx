@@ -6,10 +6,10 @@ import App from './App.jsx'
 
 const isLocalhost = window.location.hostname === "localhost";
 
-// Remove trailing slash from production URL
+// Frontend URLs (where user logs in)
 const redirectURL = isLocalhost
   ? "http://localhost:5173"
-  : "https://watch-ecommerce-ttrm.onrender.com";
+  : "https://webdevfinal-f.onrender.com";
 
 const config = {
   signInRedirectURL: redirectURL + "/login",
@@ -23,11 +23,17 @@ const config = {
   storage: "localStorage"
 };
 
-console.log("🔧 Asgardeo Config:", {
-  signInRedirectURL: config.signInRedirectURL,
-  signOutRedirectURL: config.signOutRedirectURL,
-  environment: isLocalhost ? "local" : "production"
-});
+// Log BEFORE creating root
+console.log("=".repeat(80));
+console.log("🔧 ASGARDEO CONFIGURATION 🔧");
+console.log("=".repeat(80));
+console.log("Environment:", isLocalhost ? "LOCAL" : "PRODUCTION");
+console.log("Hostname:", window.location.hostname);
+console.log("Sign In Redirect URL:", config.signInRedirectURL);
+console.log("Sign Out Redirect URL:", config.signOutRedirectURL);
+console.log("=".repeat(80));
+console.log("⚠️  THE ABOVE URL MUST EXACTLY MATCH ASGARDEO SETTINGS! ⚠️");
+console.log("=".repeat(80));
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
